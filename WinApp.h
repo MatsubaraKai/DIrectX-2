@@ -12,6 +12,8 @@ public:
 	//ウィンドウプロシージャ
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
+	HWND GetHwnd() const { return hwnd_; }
+
 	static void CreateWindowView(const wchar_t* title = L"CG2_WinMain");
 
 private:
@@ -19,5 +21,5 @@ private:
 	static inline WNDCLASS wc{};
 
 	//ウィンドウオブジェクト
-	static HWND hwnd;
+	static HWND hwnd_;
 };
