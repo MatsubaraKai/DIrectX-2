@@ -1,25 +1,36 @@
 #pragma once
 #include <Windows.h>
 #include <cstdint>
+#include <d3d12.h>
+#pragma comment(lib,"d3d12.lib")
 
-class WinApp
-{
+class WinApp {
 public:
-	//ウィンドウサイズ
-	static const int32_t kClientWidth = 1280;//横幅
-	static const int32_t kClientHeight = 720;//縦幅
+	//クライアント領域サイズ
+	static const int32_t kClientWidth = 1280;
+	static const int32_t kClientHeight = 720;
 
-	//ウィンドウプロシージャ
+	HINSTANCE GetHInstance()const { return wc_.hInstance; }
+
+	static	bool Procesmessage();
+	static void Finalize();
+
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-	HWND GetHwnd() const { return hwnd_; }
+	static ID3D12Debug1* GetdebugController() { return debugController_; }
 
-	static void CreateWindowView(const wchar_t* title = L"CG2_WinMain");
+	static inline HWND GetHwnd() { return hwnd_; }
+
+	static void CreateWindowView(const wchar_t* title, int32_t clientWidth, int32_t clientheight);
 
 private:
-	// ウィンドウクラス
-	static inline WNDCLASS wc{};
+	static	UINT windowStyle_;
 
-	//ウィンドウオブジェクト
-	static HWND hwnd_;
+	static ID3D12Debug1* debugController_;
+
+	static	inline 	RECT wrc_ = { 0,0,kClientWidth,kClientHeight };
+
+	static inline	WNDCLASS wc_{};// ウィンドウクラス
+
+	static	HWND hwnd_;
 };
