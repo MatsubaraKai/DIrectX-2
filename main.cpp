@@ -50,6 +50,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	Vector4 data26 = { 0.0f,-0.4f,0.0f,1.0f };
 	Vector4 data27 = { 0.2f,-0.8f,0.0f,1.0f };
 
+	Vector4 data28 = { -0.4f,-0.8f,0.0f,1.0f };
+	Vector4 data29 = { -0.3f,-0.4f,0.0f,1.0f };
+	Vector4 data30 = { -0.2f,-0.8f,0.0f,1.0f };
+
+	Vector4 data31 = { -0.4f,-0.2f,0.0f,1.0f };
+	Vector4 data32 = { -0.3f,0.2f,0.0f,1.0f };
+	Vector4 data33 = { -0.2f,-0.2f,0.0f,1.0f };
+
+	Vector4 data34 = { -0.4f,0.4f,0.0f,1.0f };
+	Vector4 data35 = { -0.3f,0.8f,0.0f,1.0f };
+	Vector4 data36 = { -0.2f,0.4f,0.0f,1.0f };
+
+	Vector4 data37 = { 0.2f,0.4f,0.0f,1.0f };
+	Vector4 data38 = { 0.3f,0.8f,0.0f,1.0f };
+	Vector4 data39 = { 0.4f,0.4f,0.0f,1.0f };
+
+	Vector4 data40 = { 0.2f,-0.8f,0.0f,1.0f };
+	Vector4 data41 = { 0.3f,-0.4f,0.0f,1.0f };
+	Vector4 data42 = { 0.4f,-0.8f,0.0f,1.0f };
+
+	Vector4 data43 = { 0.2f,-0.2f,0.0f,1.0f };
+	Vector4 data44 = { 0.3f,0.2f,0.0f,1.0f };
+	Vector4 data45 = { 0.4f,-0.2f,0.0f,1.0f };
+
 
 
 	MSG msg{};
@@ -84,6 +108,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			Engine->DrawTriangle(data22, data23, data24);
 
 			Engine->DrawTriangle(data25, data26, data27);
+
+			Engine->DrawTriangle(data28, data29, data30);
+
+			Engine->DrawTriangle(data31, data32, data33);
+
+			Engine->DrawTriangle(data34, data35, data36);
+
+			Engine->DrawTriangle(data37, data38, data39);
+
+			Engine->DrawTriangle(data40, data41, data42);
+
+			Engine->DrawTriangle(data43, data44, data45);
 
 			Engine->EndFrame();
 		}

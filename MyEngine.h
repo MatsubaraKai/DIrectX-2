@@ -26,7 +26,7 @@ private:
 	static WinApp* win_;
 	static	DirectXCommon* dxCommon_;
 
-	CreateTriangle* triangle_[10];
+	CreateTriangle* triangle_[16];
 
 	int triangleCount_;
 
@@ -61,9 +61,9 @@ private:
 
 	//頂点リソースにデータを書き込む
 	Vector4* vertexData_;
-	Vector4 leftBottom[99];
-	Vector4 top[99];
-	Vector4 rightBottom[99];
+	Vector4 leftBottom[16];
+	Vector4 top[16];
+	Vector4 rightBottom[16];
 
 	IDxcBlob* CompileShader(
 		//CompileShaderするShaderファイルへのパス

@@ -220,7 +220,7 @@ void CreateEngine::ScissorRect()
 
 void CreateEngine::Initialize()
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		triangle_[i] = new CreateTriangle();
 		triangle_[i]->Initialize(dxCommon_);
@@ -269,7 +269,7 @@ void CreateEngine::EndFrame()
 
 void CreateEngine::Finalize()
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		triangle_[i]->Finalize();
 	}
@@ -292,7 +292,7 @@ void CreateEngine::DrawTriangle(const Vector4& a, const Vector4& b, const Vector
 {
 	triangleCount_++;
 	triangle_[triangleCount_]->Draw(a, b, c);
-	if (triangleCount_ >= 9) {
+	if (triangleCount_ >= 16) {
 		triangleCount_ = 0;
 	}
 }
