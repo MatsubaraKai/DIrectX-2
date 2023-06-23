@@ -292,7 +292,7 @@ void CreateEngine::DrawTriangle(const Vector4& a, const Vector4& b, const Vector
 {
 	triangleCount_++;
 	triangle_[triangleCount_]->Draw(a, b, c);
-	if (triangleCount_ >= 16) {
+	if (triangleCount_ >= 15) {
 		triangleCount_ = 0;
 	}
 }
