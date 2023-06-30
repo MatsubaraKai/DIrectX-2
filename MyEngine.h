@@ -20,7 +20,7 @@ public:
 
 	void Update();
 
-	void DrawTriangle(const Vector4& a, const Vector4& b, const Vector4& c);
+	void DrawTriangle(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& material);
 
 private:
 	static WinApp* win_;
@@ -51,7 +51,6 @@ private:
 
 	ID3D12PipelineState* graphicsPipelineState_;
 
-	ID3D12Resource* vertexResource_;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
 
 	D3D12_VIEWPORT viewport_{};
@@ -61,9 +60,6 @@ private:
 
 	//頂点リソースにデータを書き込む
 	Vector4* vertexData_;
-	Vector4 leftBottom[16];
-	Vector4 top[16];
-	Vector4 rightBottom[16];
 
 	IDxcBlob* CompileShader(
 		//CompileShaderするShaderファイルへのパス
@@ -82,9 +78,6 @@ private:
 	void BlendState();
 	void RasterizerState();
 	void InitializePSO();
-	void VertexResource();
 	void ViewPort();
 	void ScissorRect();
-
 };
-
