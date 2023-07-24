@@ -3,8 +3,13 @@
 #include <cstdint>
 #include <d3d12.h>
 #pragma comment(lib,"d3d12.lib")
+#include "externals/imgui/imgui.h"
+#include "externals/imgui/imgui_impl_dx12.h"
+#include "externals/imgui/imgui_impl_win32.h"
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-class WinApp {
+class WinApp
+{
 public:
 	//クライアント領域サイズ
 	static const int32_t kClientWidth = 1280;

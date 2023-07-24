@@ -1,9 +1,16 @@
 #include "WinApp.h"
 
 //ウィンドウプロシージャ
-LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam))
+	{
+		return true;
+	}
+
 	//メッセージに応じてゲーム固有の処理を行う
-	switch (msg) {
+	switch (msg)
+	{
 		//ウィンドウが破棄された
 	case WM_DESTROY:
 		// OSに対して、アプリの終了を伝える
@@ -15,7 +22,8 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-void WinApp::CreateWindowView(const wchar_t* title, int32_t clientWidth, int32_t clientheight) {
+void WinApp::CreateWindowView(const wchar_t* title, int32_t clientWidth, int32_t clientheight)
+{
 	//ウィンドウプロシージャ
 	wc_.lpfnWndProc = WindowProc;
 	//クラス名
@@ -51,7 +59,8 @@ void WinApp::CreateWindowView(const wchar_t* title, int32_t clientWidth, int32_t
 
 #ifdef _DEBUG//デバッグレイヤー
 	debugController_ = nullptr;
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController_)))) {
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController_))))
+	{
 		//デバッグレイヤーを有効化
 		debugController_->EnableDebugLayer();
 		//GPU側でもチェックを行う
@@ -63,7 +72,8 @@ void WinApp::CreateWindowView(const wchar_t* title, int32_t clientWidth, int32_t
 	ShowWindow(hwnd_, SW_SHOW);
 }
 
-bool WinApp::Procesmessage() {
+bool WinApp::Procesmessage()
+{
 	MSG msg{};
 
 	if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
@@ -81,7 +91,6 @@ void WinApp::Finalize()
 {
 	debugController_->Release();
 }
-
 
 HWND WinApp::hwnd_;
 UINT WinApp::windowStyle_;

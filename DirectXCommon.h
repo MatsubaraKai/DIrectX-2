@@ -3,11 +3,14 @@
 #include <cstdlib>
 #include <dxgi1_6.h>
 #include "WinApp.h"
-#include "String.h"
+#include "ConvertString.h"
 
-class DirectXCommon {
+class DirectXCommon
+{
 public:
 	void Initialization(WinApp* win, const wchar_t* title, int32_t backBufferWidth = WinApp::kClientWidth, int32_t backBufferHeight = WinApp::kClientHeight);
+
+	static void ImGuiInitialize();
 
 	void PreDraw();
 	void PostDraw();
@@ -43,9 +46,14 @@ private:
 
 	//スワップチェーン
 	static IDXGISwapChain4* swapChain_;
+	static DXGI_SWAP_CHAIN_DESC1 swapChainDesc_;
 
 	//ディスクリプタヒープの生成
 	static ID3D12DescriptorHeap* rtvDescriptorHeap_;
+	static D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_;
+	ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+
+	static ID3D12DescriptorHeap* srvDescriptorHeap_;
 
 	//RTVを２つ作るのでディスクリプタを２つ用意
 	static	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
@@ -62,6 +70,10 @@ private:
 	static	inline D3D12_RESOURCE_BARRIER barrier_{};
 
 	static HRESULT hr_;
+
+
+
+
 private:
 	void InitializeDXGIDevice();
 
