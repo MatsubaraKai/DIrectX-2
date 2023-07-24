@@ -1,8 +1,10 @@
-#pragma once
-#include "DirectX.h"
+ï»¿#pragma once
+#include "DirectXCommon.h"
 #include <dxcapi.h>
-#include"Vector4.h"
+#include "Vector3.h"
+#include "Vector4.h"
 #include "CreateTriangle.h"
+#include "MatrixCalculation.h"
 #pragma comment(lib,"dxcompiler.lib")
 
 class CreateEngine
@@ -26,7 +28,7 @@ private:
 	static WinApp* win_;
 	static	DirectXCommon* dxCommon_;
 
-	CreateTriangle* triangle_[16];
+	CreateTriangle* triangle_[11];
 
 	int triangleCount_;
 
@@ -58,15 +60,18 @@ private:
 
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[1];
 
-	//’¸“_ƒŠƒ\[ƒX‚Éƒf[ƒ^‚ğ‘‚«‚Ş
+	//é ‚ç‚¹ãƒªã‚½ãƒ¼ã‚¹ã«ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€
 	Vector4* vertexData_;
 
+	Transform transform_;
+	Matrix4x4 worldMatrix_;
+
 	IDxcBlob* CompileShader(
-		//CompileShader‚·‚éShaderƒtƒ@ƒCƒ‹‚Ö‚ÌƒpƒX
+		//CompileShaderã™ã‚‹Shaderãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ‘ã‚¹
 		const std::wstring& filePath,
-		//Compieler‚Ég—p‚·‚éProfile
+		//Compielerã«ä½¿ç”¨ã™ã‚‹Profile
 		const wchar_t* profile,
-		//‰Šú‰»‚Å¶¬‚µ‚½‚à‚Ì‚ğ3‚Â
+		//åˆæœŸåŒ–ã§ç”Ÿæˆã—ãŸã‚‚ã®ã‚’3ã¤
 		IDxcUtils* dxcUtils,
 		IDxcCompiler3* dxcCompiler,
 		IDxcIncludeHandler* includeHandler

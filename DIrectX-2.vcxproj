@@ -137,9 +137,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DirectX.cpp" />
+    <ClCompile Include="DirectXCommon.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="CreateEngine.cpp" />
+    <ClCompile Include="MatrixCalculation.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="CreateTriangle.cpp" />
     <ClCompile Include="WinApp.cpp" />
@@ -163,10 +164,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DirectX.h" />
+    <ClInclude Include="DirectXCommon.h" />
     <ClInclude Include="CreateEngine.h" />
+    <ClInclude Include="Matrix4x4.h" />
+    <ClInclude Include="MatrixCalculation.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="CreateTriangle.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vector4.h" />
     <ClInclude Include="WinApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

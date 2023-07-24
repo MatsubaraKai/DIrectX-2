@@ -1,4 +1,4 @@
-#include "DirectX.h"
+#include "DirectXCommon.h"
 #include <algorithm>
 #include <cassert>
 #include <thread>
@@ -50,8 +50,8 @@ int32_t DirectXCommon::backBufferHeight_;
 
 HRESULT DirectXCommon::hr_;
 
-void DirectXCommon::Initialization(WinApp* win, const wchar_t* title, int32_t backBufferWidth, int32_t backBufferHeight)
-{
+void DirectXCommon::Initialization(WinApp* win, const wchar_t* title, int32_t backBufferWidth, int32_t backBufferHeight) {
+
 	winApp_ = win;
 	backBufferWidth_ = backBufferWidth;
 	backBufferHeight_ = backBufferHeight;
@@ -74,8 +74,7 @@ void DirectXCommon::Initialization(WinApp* win, const wchar_t* title, int32_t ba
 	CreateFence();
 }
 
-void DirectXCommon::InitializeDXGIDevice()
-{
+void DirectXCommon::InitializeDXGIDevice() {
 	//DXGIファクトリーの生成
 	dxgiFactory_ = nullptr;
 	hr_ = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
@@ -86,16 +85,14 @@ void DirectXCommon::InitializeDXGIDevice()
 	//順にアダプタを頼む
 	for (UINT i = 0; dxgiFactory_->EnumAdapterByGpuPreference(i,
 		DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&useAdapter_)) !=
-		DXGI_ERROR_NOT_FOUND; i++)
-	{
+		DXGI_ERROR_NOT_FOUND; i++) {
 		//アダプター情報の取得
 		DXGI_ADAPTER_DESC3 adapterDesc{};
 		hr_ = useAdapter_->GetDesc3(&adapterDesc);
 		assert(SUCCEEDED(hr_));
 
 		//ソフトウェアアダプタでなければ採用
-		if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE))
-		{
+		if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE)) {
 			//採用アダプタの情報をログに出力
 			Log(ConvertString(std::format(L"Use Adapter:{}\n", adapterDesc.Description)));
 			break;
@@ -113,13 +110,11 @@ void DirectXCommon::InitializeDXGIDevice()
 	};
 	const char* featureLevelString[] = { "12.2","12.1","12.0" };
 	//高い順に生成できるか確認
-	for (size_t i = 0; i < _countof(featureLevels); i++)
-	{
+	for (size_t i = 0; i < _countof(featureLevels); i++) {
 		//採用したアダプターでデバイス生成
 		hr_ = D3D12CreateDevice(useAdapter_, featureLevels[i], IID_PPV_ARGS(&device_));
 		//指定した機能レベルのデバイス生成に成功したか確認
-		if (SUCCEEDED(hr_))
-		{
+		if (SUCCEEDED(hr_)) {
 			//生成できたのでログ出力をしてループ抜け
 			Log(std::format("FeatureLevel : {}\n", featureLevelString[i]));
 			break;
@@ -132,8 +127,7 @@ void DirectXCommon::InitializeDXGIDevice()
 
 #ifdef _DEBUG
 	ID3D12InfoQueue* infoQueue = nullptr;
-	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue))))
-	{
+	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
 		//ヤバイエラーで止まる
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
 		//エラーで止まる
@@ -162,8 +156,7 @@ void DirectXCommon::InitializeDXGIDevice()
 #endif // _DEBUG
 }
 
-void DirectXCommon::InitializeCommand()
-{
+void DirectXCommon::InitializeCommand() {
 	commandQueue_ = nullptr;
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
 	hr_ = device_->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue_));
@@ -182,8 +175,7 @@ void DirectXCommon::InitializeCommand()
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectXCommon::CreateSwapChain()
-{
+void DirectXCommon::CreateSwapChain() {
 	//スワップチェーン
 	swapChain_ = nullptr;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
@@ -219,8 +211,7 @@ void DirectXCommon::CreateSwapChain()
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectXCommon::CreateFinalRenderTargets()
-{
+void DirectXCommon::CreateFinalRenderTargets() {
 	//RTVの設定
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;//出力結果をSRGBに変換して書き込む
@@ -237,8 +228,7 @@ void DirectXCommon::CreateFinalRenderTargets()
 	device_->CreateRenderTargetView(swapChainResources_[1], &rtvDesc, rtvHandles_[1]);
 }
 
-void DirectXCommon::CreateFence()
-{
+void DirectXCommon::CreateFence() {
 	//初期値0でFenceを作る
 	fence_ = nullptr;
 	fenceValue_ = 0;
@@ -250,8 +240,7 @@ void DirectXCommon::CreateFence()
 	assert(fenceEvent_ != nullptr);
 }
 
-void DirectXCommon::PreDraw()
-{
+void DirectXCommon::PreDraw() {
 	//書き込むバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 	//今回のbarrierはTransition
@@ -273,8 +262,7 @@ void DirectXCommon::PreDraw()
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
 }
 
-void DirectXCommon::PostDraw()
-{
+void DirectXCommon::PostDraw() {
 	hr_;
 	//画面描画処理の終わり、状態を遷移
 	barrier_.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -295,8 +283,7 @@ void DirectXCommon::PostDraw()
 	//GPUがここまで辿り着いた時、Fenceの値を指定した値に代入するようにsignalを送る
 	commandQueue_->Signal(fence_, fenceValue_);
 
-	if (fence_->GetCompletedValue() < fenceValue_)
-	{
+	if (fence_->GetCompletedValue() < fenceValue_) {
 		//指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
 		fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
 		//イベント待つ
@@ -310,8 +297,7 @@ void DirectXCommon::PostDraw()
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectXCommon::ClearRenderTarget()
-{
+void DirectXCommon::ClearRenderTarget() {
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 	//描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, nullptr);
@@ -321,8 +307,7 @@ void DirectXCommon::ClearRenderTarget()
 
 }
 
-void DirectXCommon::Finalize()
-{
+void DirectXCommon::Finalize() {
 	CloseHandle(fenceEvent_);
 	fence_->Release();
 
