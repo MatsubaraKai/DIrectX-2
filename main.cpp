@@ -1,5 +1,5 @@
-#include "MyEngine.h"
-#include "Triangle.h"
+#include "CreateEngine.h"
+#include "CreateTriangle.h"
 
 const wchar_t kWindowTitle[] = { L"CG2_Title" };
 
