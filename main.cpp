@@ -18,9 +18,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	for (int i = 0; i < 1; i++)
 	{
-		triangleVertexData[i][0] = { -1.0f,-1.0f + (i * 0.3f),0.0f,2.0f };
-		triangleVertexData[i][1] = { 0.0f,1.5f + (i * 0.3f),0.0f,2.0f };
-		triangleVertexData[i][2] = { 1.0f,-1.0f + (i * 0.3f),0.0f,2.0f };
+		triangleVertexData[i][0] = { -1.0f,-1.0f + (i * 0.2f),0.0f,2.0f };
+		triangleVertexData[i][1] = { 0.0f,1.5f + (i * 0.2f),0.0f,2.0f };
+		triangleVertexData[i][2] = { 1.0f,-1.0f + (i * 0.2f),0.0f,2.0f };
 		material[i] = { material[i].x,material[i].y,material[i].w,material[i].z };
 	}
 
@@ -44,8 +44,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		{
 			material[i].x = materialColor[0];
 			material[i].y = materialColor[1];
-			material[i].w = materialColor[2];
-			material[i].z = materialColor[3];
+			material[i].w = materialColor[3];
+			material[i].z = materialColor[2];
 		}
 
 		//ŽOŠpŒ`•`‰æ
