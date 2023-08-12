@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <chrono>
 #include <cstdlib>
 #include <dxgi1_6.h>
@@ -10,52 +10,70 @@ class DirectXCommon
 public:
 	void Initialization(WinApp* win, const wchar_t* title, int32_t backBufferWidth = WinApp::kClientWidth, int32_t backBufferHeight = WinApp::kClientHeight);
 
-	static void ImGuiInitialize();
-
 	void PreDraw();
+
 	void PostDraw();
 
 	static inline void ClearRenderTarget();
-	static void Finalize();
 
-	HRESULT GetHr() { return  hr_; }
+	static void Release();
+
+	HRESULT GetHr() { return hr_; }
+
 	void SetHr(HRESULT a) { this->hr_ = a; }
+
 	ID3D12Device* GetDevice() { return device_; }
+
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList_; }
+
+	static void ImGuiInitialize();
+
+	ID3D12DescriptorHeap* GetSrvDescriptorHeap() { return srvDescriptorHeap_; }
+
+private:
+	void InitializeDXGIDevice();
+
+	void InitializeCommand();
+
+	void CreateSwapChain();
+
+	void CreateFinalRenderTargets();
+
+	void CreateFence();
 
 private:
 	static WinApp* winApp_;
 
-	//DXGIƒtƒ@ƒNƒgƒŠ[‚Ì¶¬
+	//DXGIãƒ•ã‚¡ã‚¯ãƒˆãƒªãƒ¼ã®ç”Ÿæˆ
 	static IDXGIFactory7* dxgiFactory_;
 
-	//g—p‚·‚éƒAƒ_ƒvƒ^—p‚Ì•Ï”
+	//ä½¿ç”¨ã™ã‚‹ã‚¢ãƒ€ãƒ—ã‚¿ç”¨ã®å¤‰æ•°
 	static IDXGIAdapter4* useAdapter_;
 
-	//D3D12Device‚Ì¶¬
+	//D3D12Deviceã®ç”Ÿæˆ
 	static	ID3D12Device* device_;
 
-	//ƒRƒ}ƒ“ƒhƒLƒ…[¶¬
+	//ã‚³ãƒãƒ³ãƒ‰ã‚­ãƒ¥ãƒ¼ç”Ÿæˆ
 	static ID3D12CommandQueue* commandQueue_;
 
-	//ƒRƒ}ƒ“ƒhƒAƒƒP[ƒ^‚Ì¶¬
+	//ã‚³ãƒãƒ³ãƒ‰ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿ã®ç”Ÿæˆ
 	static ID3D12CommandAllocator* commandAllocator_;
 
-	//ƒRƒ}ƒ“ƒhƒŠƒXƒg‚ğ¶¬‚·‚é
+	//ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã‚’ç”Ÿæˆã™ã‚‹
 	static ID3D12GraphicsCommandList* commandList_;
 
-	//ƒXƒƒbƒvƒ`ƒF[ƒ“
+	//ã‚¹ãƒ¯ãƒƒãƒ—ãƒã‚§ãƒ¼ãƒ³
 	static IDXGISwapChain4* swapChain_;
 	static DXGI_SWAP_CHAIN_DESC1 swapChainDesc_;
 
-	//ƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚Ì¶¬
+	//ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã®ç”Ÿæˆ
 	static ID3D12DescriptorHeap* rtvDescriptorHeap_;
 	static D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_;
-	ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
+	// SRV
 	static ID3D12DescriptorHeap* srvDescriptorHeap_;
 
-	//RTV‚ğ‚Q‚Âì‚é‚Ì‚ÅƒfƒBƒXƒNƒŠƒvƒ^‚ğ‚Q‚Â—pˆÓ
+	//RTVã‚’ï¼’ã¤ä½œã‚‹ã®ã§ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã‚’ï¼’ã¤ç”¨æ„
 	static	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2];
 	static	ID3D12Resource* swapChainResources_[2];
 
@@ -71,17 +89,6 @@ private:
 
 	static HRESULT hr_;
 
-
-
-
-private:
-	void InitializeDXGIDevice();
-
-	void CreateSwapChain();
-
-	void InitializeCommand();
-
-	void CreateFinalRenderTargets();
-
-	void CreateFence();
+	ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 };
+

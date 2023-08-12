@@ -1,6 +1,6 @@
-#include "MatrixCalculation.h"
+ï»¿#include "MatrixCalculation.h"
 
-//X²‰ñ“]s—ñ
+//Xè»¸å›è»¢è¡Œåˆ—
 Matrix4x4 MakeRotateXmatrix(float radian) {
 	Matrix4x4 result;
 	result.m[0][0] = 1.0f;
@@ -25,7 +25,7 @@ Matrix4x4 MakeRotateXmatrix(float radian) {
 	return result;
 }
 
-//Y²‰ñ“]s—ñ
+//Yè»¸å›è»¢è¡Œåˆ—
 Matrix4x4 MakeRotateYmatrix(float radian) {
 	Matrix4x4 result;
 	result.m[0][0] = std::cos(radian);
@@ -50,7 +50,7 @@ Matrix4x4 MakeRotateYmatrix(float radian) {
 	return result;
 }
 
-//Z²‰ñ“]s—ñ
+//Zè»¸å›è»¢è¡Œåˆ—
 Matrix4x4 MakeRotateZmatrix(float radian) {
 	Matrix4x4 result;
 	result.m[0][0] = std::cos(radian);
@@ -75,7 +75,7 @@ Matrix4x4 MakeRotateZmatrix(float radian) {
 	return result;
 }
 
-//•½sˆÚ“®
+//å¹³è¡Œç§»å‹•
 Matrix4x4 MakeTranslateMatrix(Vector3 translate) {
 	Matrix4x4 result;
 	result.m[0][0] = 1.0f;
@@ -101,7 +101,7 @@ Matrix4x4 MakeTranslateMatrix(Vector3 translate) {
 	return result;
 };
 
-//Šg‘åk¬
+//æ‹¡å¤§ç¸®å°
 Matrix4x4 MakeScaleMatrix(const Vector3& scale) {
 	Matrix4x4 result;
 
@@ -128,7 +128,7 @@ Matrix4x4 MakeScaleMatrix(const Vector3& scale) {
 	return result;
 }
 
-//ƒAƒtƒBƒ“•ÏŠ·
+//ã‚¢ãƒ•ã‚£ãƒ³å¤‰æ›
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 	Matrix4x4 result;
 	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
@@ -144,7 +144,7 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 	return result;
 }
 
-//s—ñ‚Ì‰Á–@
+//è¡Œåˆ—ã®åŠ æ³•
 Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 	for (int i = 0; i < 4; i++) {
@@ -155,7 +155,7 @@ Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
-//s—ñ‚ÌŒ¸–@
+//è¡Œåˆ—ã®æ¸›æ³•
 Matrix4x4 Sub(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 	for (int i = 0; i < 4; i++) {
@@ -166,7 +166,7 @@ Matrix4x4 Sub(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
-//s—ñ‚ÌÏ
+//è¡Œåˆ—ã®ç©
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 	for (int i = 0; i < 4; i++) {
@@ -181,7 +181,7 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
-//‹ts—ñ
+//é€†è¡Œåˆ—
 Matrix4x4 Inverse(const Matrix4x4& m1) {
 	Matrix4x4 result;
 	float deterninant = m1.m[0][0] * m1.m[1][1] * m1.m[2][2] * m1.m[3][3] +
@@ -338,7 +338,7 @@ Matrix4x4 Inverse(const Matrix4x4& m1) {
 	return result;
 }
 
-//“]’us—ñ
+//è»¢ç½®è¡Œåˆ—
 Matrix4x4 Transpose(const Matrix4x4& m) {
 	Matrix4x4 result;
 	for (int i = 0; i < 4; ++i) {
@@ -349,7 +349,7 @@ Matrix4x4 Transpose(const Matrix4x4& m) {
 	return result;
 }
 
-//’PˆÊs—ñ
+//å˜ä½è¡Œåˆ—
 Matrix4x4 MakeIdentity4x4() {
 	return{
 		1,0,0,0,
@@ -363,7 +363,7 @@ float contangent(float b, float a) {
 	return(b / tan(a));
 }
 
-//“§‹“Š‰es—ñ
+//é€è¦–æŠ•å½±è¡Œåˆ—
 Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRadio, float nearClip, float farClip) {
 	Matrix4x4 result;
 	result.m[0][0] = contangent((1 / aspectRadio), (fovY / 2));

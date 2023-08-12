@@ -1,10 +1,11 @@
-#include "Triangle.h"
+ï»¿#include "Triangle.h"
 #include <assert.h>
 #include "MyEngine.h"
 
-void Triangle::Initialize(DirectXCommon* dxCommon)
+void Triangle::Initialize(DirectXCommon* dxCommon, MyEngine* engine)
 {
 	dxCommon_ = dxCommon;
+	engine_ = engine;
 	SettingVertex();
 	SettingColor();
 	MoveMatrix();
@@ -12,30 +13,41 @@ void Triangle::Initialize(DirectXCommon* dxCommon)
 
 void Triangle::Draw(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& material, const Matrix4x4& wvpdata)
 {
-	//¶‰º
-	vertexData_[0] = a;
-	//ã
-	vertexData_[1] = b;
-	//‰E‰º
-	vertexData_[2] = c;
+	//å·¦ä¸‹
+	vertexData_[0].position = a;
+	vertexData_[0].texcoord = { 0.0f,1.0f };
+
+	//ä¸Š
+	vertexData_[1].position = b;
+	vertexData_[1].texcoord = { 0.5f,0.0f };
+
+	//å³ä¸‹
+	vertexData_[2].position = c;
+	vertexData_[2].texcoord = { 1.0f,1.0f };
 
 	*materialData_ = material;
 
 	*wvpData_ = wvpdata;
 
-	//VBV‚ðÝ’è
+	//VBVã‚’è¨­å®š
 	dxCommon_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
-	//Œ`ó‚ðÝ’èBPS0‚ÉÝ’è‚µ‚Ä‚¢‚é‚à‚Ì‚Æ‚Í‚Ü‚½•ÊB“¯‚¶‚à‚Ì‚ðÝ’è‚·‚é
+	
+	//å½¢çŠ¶ã‚’è¨­å®šã€‚PS0ã«è¨­å®šã—ã¦ã„ã‚‹ã‚‚ã®ã¨ã¯ã¾ãŸåˆ¥ã€‚åŒã˜ã‚‚ã®ã‚’è¨­å®šã™ã‚‹
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//ƒ}ƒeƒŠƒAƒ‹CBuffer‚ÌêŠ‚ðÝ’è
+	
+	//ãƒžãƒ†ãƒªã‚¢ãƒ«CBufferã®å ´æ‰€ã‚’è¨­å®š
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
-	//•`‰æ
+	
+	//SRVã®DescriptorTableã®å…ˆé ­ã‚’è¨­å®šã€‚2ã¯rootPrameter[2]ã§ã‚ã‚‹ã€‚
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, engine_->GetTextureHandleGPU());
+
+	//æç”»
 	dxCommon_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 
 }
 
-void Triangle::Finalize()
+void Triangle::Release()
 {
 	materialResource_->Release();
 	vertexResource_->Release();
@@ -44,53 +56,53 @@ void Triangle::Finalize()
 
 void Triangle::SettingVertex()
 {
-	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Vector4) * 3);
-	//ƒŠƒ\[ƒX‚Ìæ“ª‚ÌƒAƒhƒŒƒX‚©‚çŽg‚¤
+	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * 3);
+	//ãƒªã‚½ãƒ¼ã‚¹ã®å…ˆé ­ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‹ã‚‰ä½¿ã†
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	//Žg—p‚·‚éƒŠƒ\[ƒX‚ÌƒTƒCƒY‚Í’¸“_3‚Â•ª‚ÌƒTƒCƒY
-	vertexBufferView_.SizeInBytes = sizeof(Vector4) * 3;
-	//1’¸“_“–‚½‚è‚ÌƒTƒCƒY
-	vertexBufferView_.StrideInBytes = sizeof(Vector4);
-	//‘‚«ž‚Þ‚½‚ß‚ÌƒAƒhƒŒƒX‚ðŽæ“¾
+	//ä½¿ç”¨ã™ã‚‹ãƒªã‚½ãƒ¼ã‚¹ã®ã‚µã‚¤ã‚ºã¯é ‚ç‚¹3ã¤åˆ†ã®ã‚µã‚¤ã‚º
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 3;
+	//1é ‚ç‚¹å½“ãŸã‚Šã®ã‚µã‚¤ã‚º
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
+	//æ›¸ãè¾¼ã‚€ãŸã‚ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
 }
 
-void Triangle::SettingColor()
+void Triangle::SettingColor() 
 {
-	//ƒ}ƒeƒŠƒAƒ‹—p‚ÌƒŠƒ\[ƒX‚ðì‚é@¡‰ñ‚Ícolor1‚Â•ª
+	//ãƒžãƒ†ãƒªã‚¢ãƒ«ç”¨ã®ãƒªã‚½ãƒ¼ã‚¹ã‚’ä½œã‚‹ã€€ä»Šå›žã¯color1ã¤åˆ†
 	materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Vector4));
-	//‘‚«ž‚Þ‚½‚ß‚ÌƒAƒhƒŒƒX‚ðŽæ“¾
+	//æ›¸ãè¾¼ã‚€ãŸã‚ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 }
 
-void Triangle::MoveMatrix()
+void Triangle::MoveMatrix() 
 {
 	wvpResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Matrix4x4));
 	wvpResource_->Map(0, NULL, reinterpret_cast<void**>(&wvpData_));
 	*wvpData_ = MakeIdentity4x4();
 }
 
-ID3D12Resource* Triangle::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes)
+ID3D12Resource* Triangle::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) 
 {
-	//’¸“_ƒŠƒ\[ƒX—p‚Ìƒq[ƒv‚ÌÝ’è
+	//é ‚ç‚¹ãƒªã‚½ãƒ¼ã‚¹ç”¨ã®ãƒ’ãƒ¼ãƒ—ã®è¨­å®š
 	D3D12_HEAP_PROPERTIES uplodeHeapProperties{};
-	uplodeHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//UploadHeap‚ðŽg‚¤
-	//’¸“_ƒŠƒ\[ƒX‚ÌÝ’è
+	uplodeHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//UploadHeapã‚’ä½¿ã†
+	//é ‚ç‚¹ãƒªã‚½ãƒ¼ã‚¹ã®è¨­å®š
 	D3D12_RESOURCE_DESC ResourceDesc{};
-	//ƒoƒbƒtƒ@ƒŠƒ\[ƒXBƒeƒNƒXƒ`ƒƒ‚Ìê‡‚Í‚Ü‚½•Ê‚ÌÝ’è‚ð‚·‚é
+	//ãƒãƒƒãƒ•ã‚¡ãƒªã‚½ãƒ¼ã‚¹ã€‚ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å ´åˆã¯ã¾ãŸåˆ¥ã®è¨­å®šã‚’ã™ã‚‹
 	ResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	ResourceDesc.Width = sizeInBytes;//ƒŠƒ\[ƒXƒTƒCƒY
-	//ƒoƒbƒtƒ@‚Ìê‡‚Í‚±‚ê‚ç‚Í‚P‚É‚·‚éŒˆ‚Ü‚è
+	ResourceDesc.Width = sizeInBytes;//ãƒªã‚½ãƒ¼ã‚¹ã‚µã‚¤ã‚º
+	//ãƒãƒƒãƒ•ã‚¡ã®å ´åˆã¯ã“ã‚Œã‚‰ã¯ï¼‘ã«ã™ã‚‹æ±ºã¾ã‚Š
 	ResourceDesc.Height = 1;
 	ResourceDesc.DepthOrArraySize = 1;
 	ResourceDesc.MipLevels = 1;
 	ResourceDesc.SampleDesc.Count = 1;
-	//ƒoƒbƒtƒ@‚Ìê‡‚Í‚±‚ê‚É‚·‚éŒˆ‚Ü‚è
+	//ãƒãƒƒãƒ•ã‚¡ã®å ´åˆã¯ã“ã‚Œã«ã™ã‚‹æ±ºã¾ã‚Š
 	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	HRESULT hr;
 
 	ID3D12Resource* Resource = nullptr;
-	//ŽÀÛ‚É’¸“_ƒŠƒ\[ƒX‚ðì‚é
+	//å®Ÿéš›ã«é ‚ç‚¹ãƒªã‚½ãƒ¼ã‚¹ã‚’ä½œã‚‹
 	hr = device->CreateCommittedResource(&uplodeHeapProperties, D3D12_HEAP_FLAG_NONE,
 		&ResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
 		IID_PPV_ARGS(&Resource));

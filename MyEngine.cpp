@@ -1,59 +1,68 @@
-#include "MyEngine.h"
+ï»¿#include "MyEngine.h"
 #include <assert.h>
 
 IDxcBlob* MyEngine::CompileShader(const std::wstring& filePath, const wchar_t* profile, IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler)
 {
-	//‚±‚ê‚©‚çƒVƒF[ƒ_[‚ğƒRƒ“ƒpƒCƒ‹‚·‚é|‚ğƒƒO‚Éo‚·
+	//ã“ã‚Œã‹ã‚‰ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã™ã‚‹æ—¨ã‚’ãƒ­ã‚°ã«å‡ºã™
 	Log(ConvertString(std::format(L"Begin CompileShader, path:{},profile:{}\n", filePath, profile)));
-	//hlslƒtƒ@ƒCƒ‹‚ğ“Ç‚Ş
+
+	//hlslãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã‚€
 	IDxcBlobEncoding* shaderSource = nullptr;
 	dxCommon_->SetHr(dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource));
-	//“Ç‚ß‚È‚©‚Á‚½‚çŒˆ‚ß‚é
+
+	//èª­ã‚ãªã‹ã£ãŸã‚‰æ±ºã‚ã‚‹
 	assert(SUCCEEDED(dxCommon_->GetHr()));
-	//“Ç‚İ‚ñ‚¾ƒtƒ@ƒCƒ‹‚Ì“à—e‚ğİ’è‚·‚é
+
+	//èª­ã¿è¾¼ã‚“ã ãƒ•ã‚¡ã‚¤ãƒ«ã®å†…å®¹ã‚’è¨­å®šã™ã‚‹
 	DxcBuffer shaderSourceBuffer;
 	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
 	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
 	shaderSourceBuffer.Encoding = DXC_CP_UTF8;
 	LPCWSTR arguments[] = {
-		filePath.c_str(),//ƒRƒ“ƒpƒCƒ‹‘ÎÛ‚Ìhlslƒtƒ@ƒCƒ‹–¼
-		L"-E",L"main",//ƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg‚Ìw’èBŠî–{“I‚ÉmainˆÈŠO‚É‚Í‚µ‚È‚¢
-		L"-T",profile,//ShaderProflie‚Ìİ’è
-		L"-Zi",L"-Qembed_debug",//ƒfƒoƒbƒO—p‚Ìî•ñ‚ğ–„‚ß‚Ş
-		L"-Od", //Å“K‰»‚ğŠO‚µ‚Ä‚¨‚­
-		L"-Zpr",//ƒƒ‚ƒŠƒŒƒCƒAƒEƒg‚Ís—Dæ
+		filePath.c_str(),//ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«å¯¾è±¡ã®hlslãƒ•ã‚¡ã‚¤ãƒ«å
+		L"-E",L"main",//ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆã®æŒ‡å®šã€‚åŸºæœ¬çš„ã«mainä»¥å¤–ã«ã¯ã—ãªã„
+		L"-T",profile,//ShaderProflieã®è¨­å®š
+		L"-Zi",L"-Qembed_debug",//ãƒ‡ãƒãƒƒã‚°ç”¨ã®æƒ…å ±ã‚’åŸ‹ã‚è¾¼ã‚€
+		L"-Od", //æœ€é©åŒ–ã‚’å¤–ã—ã¦ãŠã
+		L"-Zpr",//ãƒ¡ãƒ¢ãƒªãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã¯è¡Œå„ªå…ˆ
 	};
-	//ÀÛ‚ÉShader‚ğƒRƒ“ƒpƒCƒ‹‚·‚é
+
+	//å®Ÿéš›ã«Shaderã‚’ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã™ã‚‹
 	IDxcResult* shaderResult = nullptr;
 	dxCommon_->SetHr(dxcCompiler->Compile(
-		&shaderSourceBuffer,//“Ç‚İ‚ñ‚¾ƒtƒ@ƒCƒ‹
-		arguments,//ƒRƒ“ƒpƒCƒ‹ƒIƒvƒVƒ‡ƒ“
-		_countof(arguments),//ƒRƒ“ƒpƒCƒ‹ƒIƒvƒVƒ‡ƒ“‚Ì”
-		includeHandler, // include‚ªŠÜ‚Ü‚ê‚½”X
-		IID_PPV_ARGS(&shaderResult)//ƒRƒ“ƒpƒCƒ‹Œ‹‰Ê
+		&shaderSourceBuffer,//èª­ã¿è¾¼ã‚“ã ãƒ•ã‚¡ã‚¤ãƒ«
+		arguments,//ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+		_countof(arguments),//ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®æ•°
+		includeHandler, // includeãŒå«ã¾ã‚ŒãŸè«¸ã€…
+		IID_PPV_ARGS(&shaderResult)//ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«çµæœ
 	));
-	//ƒRƒ“ƒpƒCƒ‹ƒGƒ‰[‚Å‚Í‚È‚­dxc‚ª‹N“®‚Å‚«‚È‚¢‚È‚Ç’v–½“I‚Èó‹µ
+
+	//ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚¨ãƒ©ãƒ¼ã§ã¯ãªãdxcãŒèµ·å‹•ã§ããªã„ãªã©è‡´å‘½çš„ãªçŠ¶æ³
 	assert(SUCCEEDED(dxCommon_->GetHr()));
 
-	//ŒxEƒGƒ‰[‚ªo‚½‚çƒƒO‚Éo‚µ‚Ä~‚ß‚é
+	//è­¦å‘Šãƒ»ã‚¨ãƒ©ãƒ¼ãŒå‡ºãŸã‚‰ãƒ­ã‚°ã«å‡ºã—ã¦æ­¢ã‚ã‚‹
 	IDxcBlobUtf8* shaderError = nullptr;
 	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
-	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
+	if (shaderError != nullptr && shaderError->GetStringLength() != 0)
+	{
 		Log(shaderError->GetStringPointer());
-		//ŒxEƒGƒ‰[ƒ_ƒâ‘Î
+		//è­¦å‘Šãƒ»ã‚¨ãƒ©ãƒ¼ãƒ€ãƒ¡çµ¶å¯¾
 		assert(false);
 	}
 
-	//ƒRƒ“ƒpƒCƒ‹Œ‹‰Ê‚©‚çÀs—p‚ÌƒoƒCƒiƒŠ•”•ª‚ğæ“¾
+	//ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«çµæœã‹ã‚‰å®Ÿè¡Œç”¨ã®ãƒã‚¤ãƒŠãƒªéƒ¨åˆ†ã‚’å–å¾—
 	IDxcBlob* shaderBlob = nullptr;
 	dxCommon_->SetHr(shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr));
 	assert(SUCCEEDED(dxCommon_->GetHr()));
-	//¬Œ÷‚µ‚½ƒƒO‚ğo‚·
+
+	//æˆåŠŸã—ãŸãƒ­ã‚°ã‚’å‡ºã™
 	Log(ConvertString(std::format(L"Compile Succeeded, path:{},profile:{}\n", filePath, profile)));
-	//‚à‚¤g‚í‚È‚¢ƒŠƒ\[ƒX‚ğŠJ•ú
+
+	//ã‚‚ã†ä½¿ã‚ãªã„ãƒªã‚½ãƒ¼ã‚¹ã‚’é–‹æ”¾
 	shaderSource->Release();
 	shaderResult->Release();
-	//Às—p‚ÌƒoƒCƒiƒŠ‚ğ•Ô‹p
+
+	//å®Ÿè¡Œç”¨ã®ãƒã‚¤ãƒŠãƒªã‚’è¿”å´
 	return shaderBlob;
 }
 
@@ -62,11 +71,13 @@ void MyEngine::InitializeDxcCompiler()
 	HRESULT hr;
 	dxcUtils_ = nullptr;
 	dxcCompiler_ = nullptr;
+
 	hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
 	assert(SUCCEEDED(hr));
 	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler_));
 	assert(SUCCEEDED(hr));
-	//Œ»“_‚Åinclude‚Í‚µ‚È‚¢‚ªAinclude‚É‘Î‰‚·‚é‚½‚ß‚Ìİ’è‚ğs‚Á‚Ä‚¢‚­
+
+	//ç¾æ™‚ç‚¹ã§includeã¯ã—ãªã„ãŒã€includeã«å¯¾å¿œã™ã‚‹ãŸã‚ã®è¨­å®šã‚’è¡Œã£ã¦ã„ã
 	includeHandler_ = nullptr;
 	hr = dxcUtils_->CreateDefaultIncludeHandler(&includeHandler_);
 	assert(SUCCEEDED(hr));
@@ -74,33 +85,60 @@ void MyEngine::InitializeDxcCompiler()
 
 void MyEngine::CreateRootSignature()
 {
-	//RootSignatureì¬
+	//RootSignatureä½œæˆ
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	//RootParameterì¬A•¡”İ’è‰Â”\‚Èˆ×A”z—ñ‚É
-	D3D12_ROOT_PARAMETER rootParameters[2] = {};
-	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//CBV‚ğg‚¤
-	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;//PixelShader‚Åg‚¤
-	rootParameters[0].Descriptor.ShaderRegister = 0;//ƒŒƒWƒXƒ^”Ô†0‚ÆƒoƒCƒ“ƒh
-	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//CBV‚ğg‚¤
-	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;//VertexShader‚Åg‚¤
-	rootParameters[1].Descriptor.ShaderRegister = 0;//ƒŒƒWƒXƒ^”Ô†0‚ÆƒoƒCƒ“ƒh
-	descriptionRootSignature.pParameters = rootParameters;//ƒ‹[ƒgƒpƒ‰ƒ[ƒ^”z—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
-	descriptionRootSignature.NumParameters = _countof(rootParameters);//”z—ñ‚Ì’·‚³
+	//RootParameterä½œæˆã€è¤‡æ•°è¨­å®šå¯èƒ½ãªç‚ºã€é…åˆ—ã«
+	D3D12_ROOT_PARAMETER rootParameters[3] = {};
+	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//CBVã‚’ä½¿ã†
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;//PixelShaderã§ä½¿ã†
+	rootParameters[0].Descriptor.ShaderRegister = 0;//ãƒ¬ã‚¸ã‚¹ã‚¿ç•ªå·0ã¨ãƒã‚¤ãƒ³ãƒ‰
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//CBVã‚’ä½¿ã†
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;//VertexShaderã§ä½¿ã†
+	rootParameters[1].Descriptor.ShaderRegister = 0;//ãƒ¬ã‚¸ã‚¹ã‚¿ç•ªå·0ã¨ãƒã‚¤ãƒ³ãƒ‰
+	descriptionRootSignature.pParameters = rootParameters;//ãƒ«ãƒ¼ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿é…åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+	descriptionRootSignature.NumParameters = _countof(rootParameters);//é…åˆ—ã®é•·ã•
 
-	//ƒVƒŠƒAƒ‰ƒCƒY‚µ‚ÄƒoƒCƒiƒŠ‚É‚·‚é
+	//DescriptorRange
+	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	descriptorRange[0].BaseShaderRegister = 0;
+	descriptorRange[0].NumDescriptors = 1;
+	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange;
+	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
+
+	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
+	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;
+	staticSamplers[0].ShaderRegister = 0;
+	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	descriptionRootSignature.pStaticSamplers = staticSamplers;
+	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
+
+	//ã‚·ãƒªã‚¢ãƒ©ã‚¤ã‚ºã—ã¦ãƒã‚¤ãƒŠãƒªã«ã™ã‚‹
 	signatureBlob_ = nullptr;
 	errorBlob_ = nullptr;
 	HRESULT hr;
 	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
 		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
-	if (FAILED(dxCommon_->GetHr())) {
+
+	if (FAILED(dxCommon_->GetHr()))
+	{
 		Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
 		assert(false);
 	}
-	//ƒoƒCƒiƒŠ‚ğŒ³‚É¶¬
+
+	//ãƒã‚¤ãƒŠãƒªã‚’å…ƒã«ç”Ÿæˆ
 	rootSignature_ = nullptr;
 	hr = dxCommon_->GetDevice()->CreateRootSignature(0, signatureBlob_->GetBufferPointer(),
 		signatureBlob_->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
@@ -114,29 +152,33 @@ void MyEngine::CreateInputlayOut()
 	inputElementDescs_[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	inputElementDescs_[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
+	inputElementDescs_[1].SemanticName = "TEXCOORD";
+	inputElementDescs_[1].SemanticIndex = 0;
+	inputElementDescs_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescs_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
 	inputLayoutDesc_.pInputElementDescs = inputElementDescs_;
 	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
 }
 
 void MyEngine::BlendState()
 {
-	//‚·‚×‚Ä‚ÌF—v‘f‚ğ‘‚«‚Ş
-	blendDesc_.RenderTarget[0].RenderTargetWriteMask =
-		D3D12_COLOR_WRITE_ENABLE_ALL;
+	//ã™ã¹ã¦ã®è‰²è¦ç´ ã‚’æ›¸ãè¾¼ã‚€
+	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 }
 
 void MyEngine::RasterizerState()
 {
-	//— –ÊiŒv‰ñ‚èj‚ğ•\¦‚µ‚È‚¢
+	//è£é¢ï¼ˆæ™‚è¨ˆå›ã‚Šï¼‰ã‚’è¡¨ç¤ºã—ãªã„
 	rasterizerDesc_.CullMode = D3D12_CULL_MODE_BACK;
-	//OŠpŒ`‚Ì’†‚ğ“h‚è‚Â‚Ô‚·
+
+	//ä¸‰è§’å½¢ã®ä¸­ã‚’å¡—ã‚Šã¤ã¶ã™
 	rasterizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
 
-	//Shader‚ğƒRƒ“ƒpƒCƒ‹‚·‚é
+	//Shaderã‚’ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã™ã‚‹
 	vertexShaderBlob_ = CompileShader(L"Object3d.VS.hlsl",
 		L"vs_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
 	assert(vertexShaderBlob_ != nullptr);
-
 
 	pixelShaderBlob_ = CompileShader(L"Object3d.PS.hlsl",
 		L"ps_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
@@ -146,24 +188,39 @@ void MyEngine::RasterizerState()
 void MyEngine::InitializePSO()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature_;//RootSignature
-	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc_;//Inputlayout
+
+	//RootSignature
+	graphicsPipelineStateDesc.pRootSignature = rootSignature_;
+
+	//Inputlayout
+	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc_;
+
+	//vertexShader
 	graphicsPipelineStateDesc.VS = { vertexShaderBlob_->GetBufferPointer(),
-		vertexShaderBlob_->GetBufferSize() };//vertexShader
+		vertexShaderBlob_->GetBufferSize() };
+
+	//pixcelShader
 	graphicsPipelineStateDesc.PS = { pixelShaderBlob_->GetBufferPointer(),
-		pixelShaderBlob_->GetBufferSize() };//pixcelShader
-	graphicsPipelineStateDesc.BlendState = blendDesc_;//BlendState
-	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc_;//rasterizerState
-	//‘‚«‚ŞRTV‚Ìî•ñ
+		pixelShaderBlob_->GetBufferSize() };
+
+	//BlendState
+	graphicsPipelineStateDesc.BlendState = blendDesc_;
+
+	//rasterizerState
+	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc_;
+
+	//æ›¸ãè¾¼ã‚€RTVã®æƒ…å ±
 	graphicsPipelineStateDesc.NumRenderTargets = 1;
 	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	//—˜—p‚·‚éƒgƒ|ƒƒWiŒ`ój‚Ìƒ^ƒCƒvBOŠpŒ`
-	graphicsPipelineStateDesc.PrimitiveTopologyType =
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	//‚Ç‚Ì‚æ‚¤‚É‰æ–Ê‚ÉF‚ğ‘Å‚¿‚Ş‚Ì‚©‚Ìİ’èi‹C‚É‚µ‚È‚­—Ç‚¢j
+
+	//åˆ©ç”¨ã™ã‚‹ãƒˆãƒãƒ­ã‚¸ï¼ˆå½¢çŠ¶ï¼‰ã®ã‚¿ã‚¤ãƒ—ã€‚ä¸‰è§’å½¢
+	graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+	//ã©ã®ã‚ˆã†ã«ç”»é¢ã«è‰²ã‚’æ‰“ã¡è¾¼ã‚€ã®ã‹ã®è¨­å®šï¼ˆæ°—ã«ã—ãªãã¦è‰¯ã„ï¼‰
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-	//ÀÛ‚É¶¬
+
+	//å®Ÿéš›ã«ç”Ÿæˆ
 	graphicsPipelineState_ = nullptr;
 	HRESULT hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState_));
@@ -172,7 +229,7 @@ void MyEngine::InitializePSO()
 
 void MyEngine::ViewPort()
 {
-	//ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ÌƒTƒCƒY‚Æˆê‚É‚µ‚Ä‰æ–Ê‘S‘Ì‚É•\¦
+	//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®ã‚µã‚¤ã‚ºã¨ä¸€ç·’ã«ã—ã¦ç”»é¢å…¨ä½“ã«è¡¨ç¤º
 	viewport_.Width = WinApp::kClientWidth;
 	viewport_.Height = WinApp::kClientHeight;
 	viewport_.TopLeftX = 0;
@@ -183,7 +240,7 @@ void MyEngine::ViewPort()
 
 void MyEngine::ScissorRect()
 {
-	//ƒVƒU[’ZŒ`
+	//ã‚·ã‚¶ãƒ¼çŸ­å½¢
 	scissorRect_.left = 0;
 	scissorRect_.right = WinApp::kClientWidth;
 	scissorRect_.top = 0;
@@ -193,15 +250,16 @@ void MyEngine::ScissorRect()
 void MyEngine::Initialize()
 {
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	for (int i = 0; i < 11; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		triangle_[i] = new Triangle();
-		triangle_[i]->Initialize(dxCommon_);
+		triangle_[i]->Initialize(dxCommon_, this);
 	}
 }
 
 void MyEngine::Initialization(WinApp* win, const wchar_t* title, int32_t width, int32_t height)
 {
+	dxCommon_ = new DirectXCommon();
 	dxCommon_->Initialization(win, title, win->kClientWidth, win->kClientHeight);
 
 	InitializeDxcCompiler();
@@ -226,41 +284,45 @@ void MyEngine::BeginFrame()
 {
 	triangleCount_ = 0;
 	dxCommon_->PreDraw();
-	//viewport‚ğİ’è
+	//viewportã‚’è¨­å®š
 	dxCommon_->GetCommandList()->RSSetViewports(1, &viewport_);
-	//scirssor‚ğİ’è
+	//scirssorã‚’è¨­å®š
 	dxCommon_->GetCommandList()->RSSetScissorRects(1, &scissorRect_);
-	//RootSignature‚ğİ’èBPS0‚Æ‚Í•Ê“rİ’è‚ª•K—v
+	//RootSignatureã‚’è¨­å®šã€‚PS0ã¨ã¯åˆ¥é€”è¨­å®šãŒå¿…è¦
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature_);
-	//PS0‚ğİ’è
+	//PS0ã‚’è¨­å®š
 	dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState_);
-	//ŠJ”­—pUI‚Ìˆ—
+	//é–‹ç™ºç”¨UIã®å‡¦ç†
 	ImGui::ShowDemoWindow();
 }
 
 void MyEngine::EndFrame()
 {
-	//“à•”ƒRƒ}ƒ“ƒh‚ğ¶¬‚·‚é
 	ImGui::Render();
 
 	dxCommon_->PostDraw();
 }
 
-void MyEngine::Finalize()
+void MyEngine::Release()
 {
-	for (int i = 0; i < 11; i++)
+	for (int i = 0; i < kMaxTriangle; i++)
 	{
-		triangle_[i]->Finalize();
+		triangle_[i]->Release();
+		textureResource_->Release();
 	}
+
 	graphicsPipelineState_->Release();
 	signatureBlob_->Release();
-	if (errorBlob_) {
+
+	if (errorBlob_)
+	{
 		errorBlob_->Release();
 	}
+
 	rootSignature_->Release();
 	pixelShaderBlob_->Release();
 	vertexShaderBlob_->Release();
-	dxCommon_->Finalize();
+	dxCommon_->Release();
 }
 
 void MyEngine::Update()
@@ -275,5 +337,94 @@ void MyEngine::DrawTriangle(const Vector4& a, const Vector4& b, const Vector4& c
 	triangle_[triangleCount_]->Draw(a, b, c, material, worldMatrix_);
 }
 
-WinApp* MyEngine::win_;
+DirectX::ScratchImage MyEngine::LoadTexture(const std::string& filePath)
+{
+	DirectX::ScratchImage mipImages = OpenImage(filePath);
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	textureResource_ = CreateTextureResource(dxCommon_->GetDevice(), metadata);
+	UploadTexturData(textureResource_, mipImages);
+
+	//metaDataã‚’åŸºã«SRVã®è¨­å®š
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = metadata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+
+	//SRVã‚’ä½œæˆã™ã‚‹DescriptorHeapã®å ´æ‰€ã‚’æ±ºã‚ã‚‹
+	textureSrvHandleCPU_ = dxCommon_->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
+	textureSrvHandleGPU_ = dxCommon_->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
+
+	//å…ˆé ­ã¯ImGuiãŒä½¿ã£ã¦ã„ã‚‹ã®ã§ãã®æ¬¡ã‚’ä½¿ã†
+	textureSrvHandleCPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	//SRVã®ä½œæˆ
+	dxCommon_->GetDevice()->CreateShaderResourceView(textureResource_, &srvDesc, textureSrvHandleCPU_);
+
+	return mipImages;
+}
+
+DirectX::ScratchImage MyEngine::OpenImage(const std::string& filePath)
+{
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã‚“ã§ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã§æ‰±ãˆã‚‹ã‚ˆã†ã«ã™ã‚‹
+	DirectX::ScratchImage image{};
+	std::wstring filePathW = ConvertString(filePath);
+	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	assert(SUCCEEDED(hr));
+
+	//ãƒŸãƒƒãƒ—ãƒãƒƒãƒ—ã®ç”Ÿæˆ
+	DirectX::ScratchImage mipImages{};
+	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+	assert(SUCCEEDED(hr));
+
+	//ãƒŸãƒƒãƒ—ãƒãƒƒãƒ—ä»˜ãã®ãƒ‡ãƒ¼ã‚¿ã‚’è¿”ã™
+	return mipImages;
+}
+
+ID3D12Resource* MyEngine::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata)
+{
+	//metadataã‚’åŸºã«Resourceã®è¨­å®š
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Width = UINT(metadata.width);
+	resourceDesc.Height = UINT(metadata.height);
+	resourceDesc.MipLevels = UINT16(metadata.mipLevels);
+	resourceDesc.DepthOrArraySize = UINT16(metadata.arraySize);
+	resourceDesc.Format = metadata.format;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension);
+
+	//åˆ©ç”¨ã™ã‚‹Heapã®è¨­å®š
+	D3D12_HEAP_PROPERTIES heapProperties{};
+	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;
+	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
+	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
+
+	//Resourceã®ç”Ÿæˆ
+	ID3D12Resource* resource = nullptr;
+	HRESULT hr = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&resource));
+	assert(SUCCEEDED(hr));
+
+	return resource;
+}
+
+void MyEngine::UploadTexturData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages)
+{
+	//Metaæƒ…å ±ã‚’å–å¾—
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+
+	//å…¨MipMapã«ã¤ã„ã¦
+	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel)
+	{
+		//MipMapLevelã‚’æŒ‡å®šã—ã¦å„Imageã‚’å–å¾—
+		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
+
+		//Textureã«è»¢é€
+		HRESULT hr = texture->WriteToSubresource(UINT(mipLevel), nullptr, img->pixels, UINT(img->rowPitch), UINT(img->slicePitch));
+		assert(SUCCEEDED(hr));
+	}
+}
+
+WinApp* MyEngine::winApp_;
 DirectXCommon* MyEngine::dxCommon_;

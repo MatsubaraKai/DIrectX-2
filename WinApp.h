@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <Windows.h>
 #include <cstdint>
 #include <d3d12.h>
@@ -8,10 +8,10 @@
 #include "externals/imgui/imgui_impl_win32.h"
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-class WinApp
+class WinApp 
 {
 public:
-	//ƒNƒ‰ƒCƒAƒ“ƒg—ÌˆæƒTƒCƒY
+	//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚µã‚¤ã‚º
 	static const int32_t kClientWidth = 1280;
 	static const int32_t kClientHeight = 720;
 
@@ -35,7 +35,7 @@ private:
 
 	static	inline 	RECT wrc_ = { 0,0,kClientWidth,kClientHeight };
 
-	static inline	WNDCLASS wc_{};// ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX
+	static inline	WNDCLASS wc_{};// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹
 
 	static	HWND hwnd_;
 };

@@ -1,64 +1,92 @@
-#include "MyEngine.h"
+ï»¿#include "MyEngine.h"
 #include "Triangle.h"
 
 const wchar_t kWindowTitle[] = { L"CG2" };
 
-//WindowsƒAƒvƒŠ‚Å‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+//Windowsã‚¢ãƒ—ãƒªã§ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆ
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) 
 {
-	//‰Šú‰»
+	//COMã®åˆæœŸåŒ–
+	CoInitializeEx(0, COINIT_MULTITHREADED);
+
+	//åˆæœŸåŒ–
 	WinApp* win_ = nullptr;
-	MyEngine* Engine = new MyEngine;
-	Engine->Initialization(win_, kWindowTitle, 1280, 720);
+	MyEngine* engine = new MyEngine;
+	engine->Initialization(win_, kWindowTitle, 1280, 720);
 
-	Engine->Initialize();
-	Vector4 triangleVertexData[10][3];
-	Vector4 material[10] = {};
-	float materialColor[4] = { material[10].x,material[10].y,material[10].w,material[10].z };
+	engine->Initialize();
 
-	for (int i = 0; i < 1; i++)
+	engine->LoadTexture("resource/uvChecker.png");
+
+	Vector4 triangleVertexData[3][3];
+	Vector4 material[3] = { { 1,1,1,1 },{ 1,1,1,1 },{ 1,1,1,1 } };
+	float materialColor0[3] = { material[0].x,material[0].y,material[0].z };
+	float materialColor1[3] = { material[1].x,material[1].y,material[1].z };
+	float materialColor2[3] = { material[2].x,material[2].y,material[2].z };
+
+	// å·¦ä¸‹ã®ä¸‰è§’å½¢
+	triangleVertexData[0][0] = { -0.6f,-0.4f,0.0f,1.0f };
+	triangleVertexData[0][1] = { -0.4f,0.0f,0.0f,1.0f };
+	triangleVertexData[0][2] = { -0.2f,-0.4f,0.0f,1.0f };
+	material[0] = { material[0].x,material[0].y,material[0].z,1.0f };
+
+	// çœŸã‚“ä¸­ã®ä¸‰è§’å½¢
+	triangleVertexData[1][0] = { -0.2f,0.4f,0.0f,1.0f };
+	triangleVertexData[1][1] = { 0.0f,0.8f,0.0f,1.0f };
+	triangleVertexData[1][2] = { 0.2f,0.4f,0.0f,1.0f };
+	material[1] = { material[1].x,material[1].y,material[1].z,1.0f };
+
+	// å³ä¸‹ã®ä¸‰è§’å½¢
+	triangleVertexData[2][0] = { 0.2f,-0.4f,0.0f,1.0f };
+	triangleVertexData[2][1] = { 0.4f,0.0f,0.0f,1.0f };
+	triangleVertexData[2][2] = { 0.6f,-0.4f,0.0f,1.0f };
+	material[2] = { material[2].x,material[2].y,material[2].z,1.0f };
+
+	MSG msg{};
+
+	while (true) 
 	{
-		triangleVertexData[i][0] = { -1.0f,-1.0f + (i * 0.2f),0.0f,2.0f };
-		triangleVertexData[i][1] = { 0.0f,1.5f + (i * 0.2f),0.0f,2.0f };
-		triangleVertexData[i][2] = { 1.0f,-1.0f + (i * 0.2f),0.0f,2.0f };
-		material[i] = { material[i].x,material[i].y,material[i].w,material[i].z };
-	}
-
-	while (true)
-	{
-		//window‚ÌƒƒbƒZ[ƒW‚ðÅ—Dæ‚Åˆ—‚³‚¹‚é
+		//windowã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æœ€å„ªå…ˆã§å‡¦ç†ã•ã›ã‚‹
 		if (win_->Procesmessage()) {
 			break;
 		}
 
-		//ƒQ[ƒ€‚Ìˆ—
-		Engine->BeginFrame();
+		//ã‚²ãƒ¼ãƒ ã®å‡¦ç†
+		engine->Update();
 
-		Engine->Update();
+		engine->BeginFrame();
 
-		ImGui::Begin("Material");
-		ImGui::ColorEdit4("MaterialColor", materialColor);
+		ImGui::Begin("Color");
+		ImGui::ColorEdit3("LeftTriangleColor", materialColor0);
+		ImGui::ColorEdit3("CenterTriangleColor", materialColor1);
+		ImGui::ColorEdit3("RightTriangleColor", materialColor2);
 		ImGui::End();
 
-		for (int i = 0; i < 10; i++)
+		material[0].x = materialColor0[0];
+		material[0].y = materialColor0[1];
+		material[0].z = materialColor0[2];
+
+		material[1].x = materialColor1[0];
+		material[1].y = materialColor1[1];
+		material[1].z = materialColor1[2];
+
+		material[2].x = materialColor2[0];
+		material[2].y = materialColor2[1];
+		material[2].z = materialColor2[2];
+
+		for (int i = 0; i < 3; i++)
 		{
-			material[i].x = materialColor[0];
-			material[i].y = materialColor[1];
-			material[i].w = materialColor[3];
-			material[i].z = materialColor[2];
+			//ä¸‰è§’å½¢æç”»
+			engine->DrawTriangle(triangleVertexData[i][0], triangleVertexData[i][1], triangleVertexData[i][2], material[i]);
 		}
 
-		//ŽOŠpŒ`•`‰æ
-		for (int i = 0; i < 10; i++)
-		{
-			Engine->DrawTriangle(triangleVertexData[i][0], triangleVertexData[i][1], triangleVertexData[i][2], material[i]);
-		}
-
-		Engine->EndFrame();
+		engine->EndFrame();
 	}
 
-	//‰ð•úˆ—
-	Engine->Finalize();
+	//è§£æ”¾å‡¦ç†
+	engine->Release();
+
+	CoUninitialize();
 
 	return 0;
 }

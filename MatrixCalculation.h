@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Matrix4x4.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -12,41 +12,41 @@ struct Transform
 	Vector3 translate;
 };
 
-//X²‰ñ“]s—ñ
+//Xè»¸å›è»¢è¡Œåˆ—
 Matrix4x4 MakeRotateXmatrix(float radian);
 
-//Y²‰ñ“]s—ñ
+//Yè»¸å›è»¢è¡Œåˆ—
 Matrix4x4 MakeRotateYmatrix(float radian);
 
-//Z²‰ñ“]s—ñ
+//Zè»¸å›è»¢è¡Œåˆ—
 Matrix4x4 MakeRotateZmatrix(float radian);
 
-//•½sˆÚ“®
+//å¹³è¡Œç§»å‹•
 Matrix4x4 MakeTranslateMatrix(Vector3 translate);
 
-//Šg‘åk¬
+//æ‹¡å¤§ç¸®å°
 Matrix4x4 MakeScaleMatrix(const Vector3& scale);
 
-// ƒAƒtƒBƒ“•ÏŠ·
+// ã‚¢ãƒ•ã‚£ãƒ³å¤‰æ›
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
-//s—ñ‚Ì‰Á–@
+//è¡Œåˆ—ã®åŠ æ³•
 Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2);
 
-//s—ñ‚ÌŒ¸–@
+//è¡Œåˆ—ã®æ¸›æ³•
 Matrix4x4 Sub(const Matrix4x4& m1, const Matrix4x4& m2);
 
-//s—ñ‚ÌÏ
+//è¡Œåˆ—ã®ç©
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
 
-//‹ts—ñ
+//é€†è¡Œåˆ—
 Matrix4x4 Inverse(const Matrix4x4& m1);
 
-//“]’us—ñ
+//è»¢ç½®è¡Œåˆ—
 Matrix4x4 Transpose(const Matrix4x4& m);
 
-//’PˆÊs—ñ
+//å˜ä½è¡Œåˆ—
 Matrix4x4 MakeIdentity4x4();
 
-//“§‹“Š‰es—ñ
+//é€è¦–æŠ•å½±è¡Œåˆ—
 Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRadio, float nearClip, float farClip);
