@@ -67,7 +67,6 @@ void GameScene::Update()
 	ImGui::Begin("OPTION");
 	ImGui::DragFloat3("CameraTranslate", cameraTransform_.translate.num, 0.05f);
 	ImGui::DragFloat3("SpriteTranslate", spriteTransform_.translate.num, 0.50f);
-	ImGui::DragFloat3("SpriteTranslate", spriteTransform_.translate.num, 0.50f);
 	ImGui::DragFloat3("SphereTranslate", sphereTransform_.translate.num, 0.05f);
 	ImGui::DragFloat3("SphereRotate", sphereTransform_.rotate.num, 0.05f);
 	ImGui::DragFloat3("SphereScale", sphereTransform_.scale.num, 0.05f);
