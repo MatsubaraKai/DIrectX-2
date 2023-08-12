@@ -131,7 +131,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="WinApp.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Downloads\CG2_test_2-02_03.zip" />
     <None Include="imgui.ini" />
   </ItemGroup>
   <ItemGroup>

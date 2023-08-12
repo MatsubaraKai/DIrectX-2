@@ -116,7 +116,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Downloads\CG2_test_2-02_03.zip" />
     <None Include="imgui.ini" />
   </ItemGroup>
   <ItemGroup>
