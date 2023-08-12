@@ -2,7 +2,5 @@
 
 struct Vector3
 {
-	float x;
-	float y;
-	float z;
+	float num[3];
 };

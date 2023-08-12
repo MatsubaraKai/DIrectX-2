@@ -1,13 +1,13 @@
-﻿#include "WinApp.h"
+#include "WinApp.h"
 
 //ウィンドウプロシージャ
-LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
+LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
 {
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) 
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam))
 	{
 		return true;
 	}
-
+	
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) 
 	{
@@ -22,7 +22,7 @@ LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-void WinApp::CreateWindowView(const wchar_t* title, int32_t clientWidth, int32_t clientheight)
+void WinApp::CreateWindowView(const wchar_t* title, int32_t clientWidth, int32_t clientheight) 
 {
 	//ウィンドウプロシージャ
 	wc_.lpfnWndProc = WindowProc;
@@ -81,12 +81,12 @@ bool WinApp::Procesmessage()
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-
+	
 	if (msg.message == WM_QUIT) // 終了メッセージが来たらループを抜ける
 	{
 		return true;
 	}
-
+	
 	return false;
 }
 
@@ -95,6 +95,13 @@ void WinApp::Finalize()
 	debugController_->Release();
 }
 
+WinApp* WinApp::GetInstance() 
+{
+	static WinApp instance;
+
+	return &instance;
+}
+
+
 HWND WinApp::hwnd_;
-UINT WinApp::windowStyle_;
 ID3D12Debug1* WinApp::debugController_;
