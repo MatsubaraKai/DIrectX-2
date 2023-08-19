@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "externals/DirectXTex/DirectXTex.h"
 #include "ConvertString.h"
 #include "WinApp.h"
 #include <chrono>
@@ -7,17 +8,19 @@
 
 class DirectXCommon {
 public:
-	void Initialization(
-	    WinApp* win, const wchar_t* title, int32_t backBufferWidth = WinApp::kClientWidth,
-	    int32_t backBufferHeight = WinApp::kClientHeight);
+	void Initialization(const wchar_t* title, int32_t backBufferWidth = WinApp::kClientWidth, int32_t backBufferHeight = WinApp::kClientHeight);
+
+	void ImGuiInitialize();
 
 	void PreDraw();
-
 	void PostDraw();
 
-	static inline void ClearRenderTarget();
+	void ClearRenderTarget();
+	void Finalize();
 
-	static void Release();
+	static ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes); 
+
+	WinApp* GetWin() { return WinApp::GetInstance(); }
 
 	HRESULT GetHr() { return hr_; }
 
@@ -26,8 +29,6 @@ public:
 	ID3D12Device* GetDevice() { return device_; }
 
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList_; }
-
-	static void ImGuiInitialize();
 
 	ID3D12DescriptorHeap* GetSrvDescriptorHeap() { return srvDescriptorHeap_; }
 
