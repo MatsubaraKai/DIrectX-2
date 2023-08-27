@@ -1,10 +1,12 @@
 #pragma once
-#include"DirectXCommon.h"
+#include "DirectXCommon.h"
+#include "Vector2.h"
 #include "Vector3.h"
-#include"Vector4.h"
+#include "Vector4.h"
+#include "VertexData.h"
 #include "Matrix4x4.h"
 #include "ConvertString.h"
-#include "VertexData.h"
+#include "MatrixCalculation.h"
 
 class MyEngine;
 
@@ -15,7 +17,7 @@ public:
 
 	void Draw(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& material, const Matrix4x4& wvpdata);
 
-	void Release();
+	void Finalize();
 
 private:
 	void SettingVertex();
@@ -36,8 +38,6 @@ private:
 	ID3D12Resource* vertexResource_;
 
 	ID3D12Resource* materialResource_;
-
-	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
 
