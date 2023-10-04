@@ -43,8 +43,8 @@ IDxcBlob* MyEngine::CompileShader(const std::wstring& filePath, const wchar_t* p
 	//警告・エラーが出たらログに出して止める
 	IDxcBlobUtf8* shaderError = nullptr;
 	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
-
-	if (shaderError != nullptr && shaderError->GetStringLength() != 0)
+	
+	if (shaderError != nullptr && shaderError->GetStringLength() != 0) 
 	{
 		Log(shaderError->GetStringPointer());
 		//警告・エラーダメ絶対
@@ -128,13 +128,12 @@ void MyEngine::CreateRootSignature()
 	//シリアライズしてバイナリにする
 	signatureBlob_ = nullptr;
 	errorBlob_ = nullptr;
-	
+
 	HRESULT hr;
 	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
 		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
 	
-	if (FAILED(dxCommon_->GetHr()))
-	{
+	if (FAILED(dxCommon_->GetHr())) {
 		Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
 		assert(false);
 	}
@@ -162,7 +161,7 @@ void MyEngine::CreateInputlayOut()
 	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
 }
 
-void MyEngine::BlendState()
+void MyEngine::BlendState() 
 {
 	//すべての色要素を書き込む
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask =
@@ -188,7 +187,7 @@ void MyEngine::RasterizerState()
 	assert(pixelShaderBlob_ != nullptr);
 }
 
-void MyEngine::InitializePSO()
+void MyEngine::InitializePSO() 
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 	graphicsPipelineStateDesc.pRootSignature = rootSignature_;//RootSignature
@@ -232,7 +231,7 @@ void MyEngine::ViewPort()
 	viewport_.MaxDepth = 1.0f;
 }
 
-void MyEngine::ScissorRect()
+void MyEngine::ScissorRect() 
 {
 	//シザー短形
 	scissorRect_.left = 0;
@@ -241,7 +240,7 @@ void MyEngine::ScissorRect()
 	scissorRect_.bottom = WinApp::kClientHeight;
 }
 
-void MyEngine::SettingDepth() 
+void MyEngine::SettingDepth()
 {
 	//DepthStencilStateの設定
 	depthStencilDesc_.DepthEnable = true;//有効化
@@ -249,11 +248,15 @@ void MyEngine::SettingDepth()
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;//比較関数、近ければ描画される
 }
 
-void MyEngine::Initialize(const wchar_t* title, int32_t width, int32_t height)
+void MyEngine::Initialize(const wchar_t* title, int32_t width, int32_t height) 
 {
 	dxCommon_ = new DirectXCommon();
 	dxCommon_->Initialization(title, WinApp::GetInstance()->kClientWidth, WinApp::GetInstance()->kClientHeight);
-	
+
+	descriptorSizeDSV = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	descriptorSizeRTV = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	descriptorSizeSRV = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
 	InitializeDxcCompiler();
 
 	CreateRootSignature();
@@ -273,13 +276,14 @@ void MyEngine::Initialize(const wchar_t* title, int32_t width, int32_t height)
 	ScissorRect();
 }
 
+
 void MyEngine::BeginFrame()
 {
 	dxCommon_->PreDraw();
 	
 	//viewportを設定
 	dxCommon_->GetCommandList()->RSSetViewports(1, &viewport_);
-
+	
 	//scirssorを設定
 	dxCommon_->GetCommandList()->RSSetScissorRects(1, &scissorRect_);
 	
@@ -301,9 +305,14 @@ void MyEngine::EndFrame()
 	dxCommon_->PostDraw();
 }
 
-void MyEngine::Finalize()
+void MyEngine::Finalize() 
 {
-	textureResource_->Release();
+	for (int i = 0; i < 2; i++) 
+	{
+		textureResource_[i]->Release();
+		intermediateResource_[i]->Release();
+	}
+	
 	graphicsPipelineState_->Release();
 	signatureBlob_->Release();
 	
@@ -318,7 +327,10 @@ void MyEngine::Finalize()
 	dxCommon_->Finalize();
 }
 
-void MyEngine::Update(){}
+void MyEngine::Update()
+{
+
+}
 
 DirectX::ScratchImage MyEngine::LoadTexture(const std::string& filePath) 
 {
@@ -361,7 +373,7 @@ ID3D12Resource* MyEngine::CreateTextureResource(ID3D12Device* device, const Dire
 		&heapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&resourceDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
+		D3D12_RESOURCE_STATE_COPY_DEST,
 		nullptr,
 		IID_PPV_ARGS(&resource));
 
@@ -370,32 +382,33 @@ ID3D12Resource* MyEngine::CreateTextureResource(ID3D12Device* device, const Dire
 	return resource;
 }
 
-void MyEngine::UploadtextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) 
+
+[[nodiscard]]
+ID3D12Resource* MyEngine::UploadtextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, uint32_t index)
 {
-	//meta情報を取得
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	std::vector<D3D12_SUBRESOURCE_DATA>subresource;
+	DirectX::PrepareUpload(dxCommon_->GetDevice(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresource);
+	uint64_t  intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresource.size()));
+	intermediateResource_[index] = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), intermediateSize);
+	UpdateSubresources(dxCommon_->GetCommandList(), texture, intermediateResource_[index], 0, 0, UINT(subresource.size()), subresource.data());
 
-	for (size_t miplevel = 0; miplevel < metadata.mipLevels; ++miplevel)
-	{
-		const DirectX::Image* img = mipImages.GetImage(miplevel, 0, 0);
-		HRESULT hr = texture->WriteToSubresource(
-			UINT(miplevel),
-			nullptr,
-			img->pixels,
-			UINT(img->rowPitch),
-			UINT(img->slicePitch)
-		);
-
-		assert(SUCCEEDED(hr));
-	}
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = texture;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	dxCommon_->GetCommandList()->ResourceBarrier(1, &barrier);
+	return intermediateResource_[index];
 }
 
-void MyEngine::SettingTexture(const std::string& filePath)
+void MyEngine::SettingTexture(const std::string& filePath, uint32_t index) 
 {
 	DirectX::ScratchImage mipImage = LoadTexture(filePath);
 	const DirectX::TexMetadata& metadata = mipImage.GetMetadata();
-	textureResource_ = CreateTextureResource(dxCommon_->GetDevice(), metadata);
-	UploadtextureData(textureResource_, mipImage);
+	textureResource_[index] = CreateTextureResource(dxCommon_->GetDevice(), metadata);
+	intermediateResource_[index] = UploadtextureData(textureResource_[index], mipImage, index);
 
 	//metaDataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -405,16 +418,29 @@ void MyEngine::SettingTexture(const std::string& filePath)
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
 	//SRVを作成するDescripterHeapの場所を決める
-	textureSrvHandleGPU_ = dxCommon_->GetSrvDescriptiorHeap()->GetGPUDescriptorHandleForHeapStart();
-	textureSrvHandleCPU_ = dxCommon_->GetSrvDescriptiorHeap()->GetCPUDescriptorHandleForHeapStart();
+	textureSrvHandleGPU_[index] = GetGPUDescriptorHandle(dxCommon_->GetSrvDescriptiorHeap(), descriptorSizeSRV, index);
+	textureSrvHandleCPU_[index] = GetCPUDescriptorHandle(dxCommon_->GetSrvDescriptiorHeap(), descriptorSizeSRV, index);
 
 	//先頭はIMGUIが使ってるので、その次を使う
-	textureSrvHandleCPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleCPU_[index].ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU_[index].ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	//SRVの生成
-	dxCommon_->GetDevice()->CreateShaderResourceView(textureResource_, &srvDesc, textureSrvHandleCPU_);
+	dxCommon_->GetDevice()->CreateShaderResourceView(textureResource_[index], &srvDesc, textureSrvHandleCPU_[index]);
 }
 
-WinApp* MyEngine::win_;
+D3D12_CPU_DESCRIPTOR_HANDLE MyEngine::GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index) 
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorheap->GetCPUDescriptorHandleForHeapStart();
+	handleCPU.ptr += (descriptorSize * index);
+	return handleCPU;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE MyEngine::GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index) 
+{
+	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorheap->GetGPUDescriptorHandleForHeapStart();
+	handleGPU.ptr += (descriptorSize * index);
+	return handleGPU;
+}
+
 DirectXCommon* MyEngine::dxCommon_;

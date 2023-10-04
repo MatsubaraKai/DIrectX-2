@@ -1,4 +1,4 @@
-﻿#include "MatrixCalculation.h"
+#include "MatrixCalculation.h"
 
 //X軸回転行列
 Matrix4x4 MakeRotateXmatrix(float radian) {

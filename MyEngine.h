@@ -1,13 +1,15 @@
-﻿#pragma once
+#pragma once
 #include "DirectXCommon.h"
 #include <dxcapi.h>
+#include "ConvertString.h"
+#include "MatrixCalculation.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
 #include "VertexData.h"
 #include "Triangle.h"
-#include "MatrixCalculation.h"
-#include "ConvertString.h"
+#include "externals/DirectXTex/d3dx12.h"
+#include <vector>
 #pragma comment(lib,"dxcompiler.lib")
 
 class MyEngine
@@ -23,15 +25,17 @@ public:
 
 	void Update();
 
-	void SettingTexture(const std::string& filePath);
+	void SettingTexture(const std::string& filePath, uint32_t index);
 
 	DirectXCommon* GetDirectXCommon() { return dxCommon_; }
 
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_[2];
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_[2];
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorheap, uint32_t descriptorSize, uint32_t index);
 
 private:
-	static WinApp* win_;
 	static	DirectXCommon* dxCommon_;
 
 	IDxcUtils* dxcUtils_;
@@ -65,9 +69,14 @@ private:
 	//頂点リソースにデータを書き込む
 	Vector4* vertexData_;
 
-	ID3D12Resource* textureResource_;
+	ID3D12Resource* textureResource_[2];
 
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc_{};
+
+	ID3D12Resource* intermediateResource_[2];
+	uint32_t descriptorSizeSRV;
+	uint32_t descriptorSizeRTV;
+	uint32_t descriptorSizeDSV;
 
 	IDxcBlob* CompileShader(
 		//CompileShaderするShaderファイルへのパス
@@ -92,5 +101,5 @@ private:
 
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
-	void UploadtextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+	ID3D12Resource* UploadtextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, uint32_t index);
 };

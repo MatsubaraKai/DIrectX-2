@@ -15,7 +15,7 @@ class Triangle
 public:
 	void Initialize(DirectXCommon* dxCommon, MyEngine* engine);
 
-	void Draw(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& material, const Matrix4x4& wvpdata);
+	void Draw(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& material, const Matrix4x4& wvpdata, uint32_t index);
 
 	void Finalize();
 
@@ -43,6 +43,6 @@ private:
 
 	//WVP用のリソース
 	ID3D12Resource* wvpResource_;
-
+	
 	Matrix4x4* wvpData_;
 };

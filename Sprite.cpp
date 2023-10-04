@@ -9,7 +9,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon, MyEngine* engine)
 	TransformMatrix();
 }
 
-void Sprite::Draw(const Vector4& a, const Vector4& b, const Transform& transform, const Vector4& material)
+void Sprite::Draw(const Vector4& a, const Vector4& b, const Transform& transform, const Vector4& material, uint32_t index)
 {
 	//座標の設定
 	vertexData_[0].position = { a.num[0],b.num[1],0.0f,1.0f };
@@ -36,9 +36,14 @@ void Sprite::Draw(const Vector4& a, const Vector4& b, const Transform& transform
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionmatrix));
 	*transformationMatrixdata_ = worldViewProjectionMatrix;
 
-	//Spriteの描画
+	//描画
 	dxCommon_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView_);
+	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, engine_->textureSrvHandleGPU_[index]);
+
 	dxCommon_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 }
 
@@ -49,7 +54,8 @@ void Sprite::Finalize()
 	transformationMatrixResource_->Release();
 }
 
-void Sprite::SettingVartex() {
+void Sprite::SettingVartex() 
+{
 	//Sprite用のリソースを作る
 	vertexResourceSprite_ = dxCommon_->CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * 6);
 

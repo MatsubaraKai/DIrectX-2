@@ -11,7 +11,7 @@ class Sprite
 public:
 	void Initialize(DirectXCommon* dxCommon, MyEngine* engine);
 
-	void Draw(const Vector4& a, const Vector4& b, const Transform& transform, const Vector4& material);
+	void Draw(const Vector4& a, const Vector4& b, const Transform& transform, const Vector4& material, uint32_t index);
 	
 	void Finalize();
 
@@ -27,7 +27,6 @@ private:
 	MyEngine* engine_;
 	
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
-	
 	ID3D12Resource* vertexResourceSprite_;
 	VertexData* vertexData_;
 	

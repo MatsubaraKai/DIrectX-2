@@ -1,4 +1,4 @@
-﻿#include "DirectXCommon.h"
+#include "DirectXCommon.h"
 #include <algorithm>
 #include <cassert>
 #include <thread>
@@ -64,7 +64,7 @@ void DirectXCommon::InitializeDXGIDevice()
 	//順にアダプタを頼む
 	for (UINT i = 0; dxgiFactory_->EnumAdapterByGpuPreference(i,
 		DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&useAdapter_)) !=
-		DXGI_ERROR_NOT_FOUND; i++) 
+		DXGI_ERROR_NOT_FOUND; i++)
 	{
 		//アダプター情報の取得
 		DXGI_ADAPTER_DESC3 adapterDesc{};
@@ -94,7 +94,7 @@ void DirectXCommon::InitializeDXGIDevice()
 	const char* featureLevelString[] = { "12.2","12.1","12.0" };
 	
 	//高い順に生成できるか確認
-	for (size_t i = 0; i < _countof(featureLevels); i++)
+	for (size_t i = 0; i < _countof(featureLevels); i++) 
 	{
 		//採用したアダプターでデバイス生成
 		hr_ = D3D12CreateDevice(useAdapter_, featureLevels[i], IID_PPV_ARGS(&device_));
@@ -114,7 +114,7 @@ void DirectXCommon::InitializeDXGIDevice()
 #ifdef _DEBUG
 	ID3D12InfoQueue* infoQueue = nullptr;
 	
-	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue))))
+	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue)))) 
 	{
 		//ヤバイエラーで止まる
 		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
@@ -216,7 +216,7 @@ ID3D12DescriptorHeap* DirectXCommon::CreateDescriptorHeap(ID3D12Device* device, 
 	return descriptorHeap;
 }
 
-void DirectXCommon::CreateFinalRenderTargets()
+void DirectXCommon::CreateFinalRenderTargets() 
 {
 	//RTVの設定
 	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;//出力結果をSRGBに変換して書き込む
@@ -249,7 +249,7 @@ void DirectXCommon::CreateFence()
 	assert(fenceEvent_ != nullptr);
 }
 
-void DirectXCommon::PreDraw() 
+void DirectXCommon::PreDraw()
 {
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -318,7 +318,7 @@ void DirectXCommon::PostDraw()
 	
 	//Fenceの値を更新
 	fenceValue_++;
-	
+
 	//GPUがここまで辿り着いた時、Fenceの値を指定した値に代入するようにsignalを送る
 	commandQueue_->Signal(fence_, fenceValue_);
 
@@ -337,10 +337,10 @@ void DirectXCommon::PostDraw()
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectXCommon::ClearRenderTarget()
+void DirectXCommon::ClearRenderTarget() 
 {
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
-
+	
 	//描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, nullptr);
 	
@@ -382,7 +382,7 @@ ID3D12Resource* DirectXCommon::CreateBufferResource(ID3D12Device* device, size_t
 	return Resource;
 }
 
-ID3D12Resource* DirectXCommon::CreateDepthStenciltextureResource(ID3D12Device* device, int32_t width, int32_t height)
+ID3D12Resource* DirectXCommon::CreateDepthStenciltextureResource(ID3D12Device* device, int32_t width, int32_t height) 
 {
 	//生成するresourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
@@ -461,7 +461,7 @@ void DirectXCommon::Finalize()
 #endif // DEBUG
 
 	CloseWindow(WinApp::GetInstance()->GetHwnd());
-	
+
 	////リソースリークチェック
 	IDXGIDebug1* debug;
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug))))

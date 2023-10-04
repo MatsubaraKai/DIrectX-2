@@ -1,4 +1,4 @@
-﻿#include "MyEngine.h"
+#include "MyEngine.h"
 #include "GameScene.h"
 
 const wchar_t kWindowTitle[] = { L"CG2" };

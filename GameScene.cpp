@@ -27,7 +27,14 @@ void GameScene::Initialize(MyEngine* engine, DirectXCommon* dxCommon)
 	sphereTransform_ = { {0.4f,0.4f,0.4f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	sphereMaterial_ = { 1.0f,1.0f,1.0f,1.0f };
 
-	for (int i = 0; i < 2; i++) 
+	texture = 0;
+	uvResourceNum = 0;
+	engine_->SettingTexture("resources/uvChecker.png", uvResourceNum);
+
+	monsterBallResourceNum = 1;
+	engine_->SettingTexture("resources/monsterBall.png", monsterBallResourceNum);
+
+	for (int i = 0; i < 2; i++)
 	{
 		triangle_[i] = new Triangle();
 		triangle_[i]->Initialize(dxCommon_, engine_);
@@ -42,8 +49,6 @@ void GameScene::Initialize(MyEngine* engine, DirectXCommon* dxCommon)
 	sphere_ = new Sphere();
 	sphere_->Initialize(dxCommon_, engine_);
 
-	engine_->SettingTexture("resources/uvChecker.png");
-
 	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
 }
 
@@ -52,7 +57,7 @@ void GameScene::Update()
 	transform_.rotate.num[1] += 0.01f;
 	worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 
-	sphereTransform_.rotate.num[1] += 0.02f;
+	sphereTransform_.rotate.num[1] += 0.01f;
 	sphereMatrix_ = MakeAffineMatrix(sphereTransform_.scale, sphereTransform_.rotate, sphereTransform_.translate);
 
 	Matrix4x4 sphereAffine = MakeAffineMatrix(sphereTransform_.scale, sphereTransform_.rotate, sphereTransform_.translate);
@@ -65,35 +70,33 @@ void GameScene::Update()
 	sphereMatrix_ = Multiply(sphereAffine, Multiply(viewMatrix, projectionMatrix));
 
 	ImGui::Begin("OPTION");
+	ImGui::Checkbox("useMonsterBall", &texture);
+	ImGui::ColorEdit3("TriangleColor", triangleData_[0].material.num);
+	ImGui::ColorEdit3("TriangleColor2", triangleData_[1].material.num);
+	ImGui::ColorEdit3("SphereColor", sphereMaterial_.num);
 	ImGui::DragFloat3("CameraTranslate", cameraTransform_.translate.num, 0.05f);
-	ImGui::DragFloat3("SpriteTranslate", spriteTransform_.translate.num, 0.50f);
+	ImGui::DragFloat3("SpriteTranslate", spriteTransform_.translate.num, 5.0f);
 	ImGui::DragFloat3("SphereTranslate", sphereTransform_.translate.num, 0.05f);
 	ImGui::DragFloat3("SphereRotate", sphereTransform_.rotate.num, 0.05f);
 	ImGui::DragFloat3("SphereScale", sphereTransform_.scale.num, 0.05f);
 	ImGui::End();
-
-	ImGui::Begin("Color");
-	ImGui::ColorEdit3("TriangleColor", triangleData_[0].material.num);
-	ImGui::ColorEdit3("TriangleColor2", triangleData_[1].material.num);
-	ImGui::ColorEdit3("SphereColor", sphereMaterial_.num);
-	ImGui::End();
 }
 
-void GameScene::Draw()
+void GameScene::Draw() 
 {
 #pragma region 3Dオブジェクト描画
-	for (int i = 0; i < 2; i++) 
+	for (int i = 0; i < 2; i++)
 	{
-		triangle_[i]->Draw(triangleData_[i].position[0], triangleData_[i].position[1], triangleData_[i].position[2], triangleData_[i].material, worldMatrix_);
+		triangle_[i]->Draw(triangleData_[i].position[0], triangleData_[i].position[1], triangleData_[i].position[2], triangleData_[i].material, worldMatrix_, uvResourceNum);
 	}
 
-	sphere_->Draw(sphereMaterial_, sphereMatrix_);
+	sphere_->Draw(sphereMaterial_, sphereMatrix_, texture);
 #pragma endregion
 
 #pragma region 前景スプライト描画
 	for (int i = 0; i < 1; i++)
 	{
-		sprite_[i]->Draw(spriteData_.positionLeftTop[i], spriteData_.positionRightDown[i], spriteTransform_, spriteData_.material);
+		sprite_[i]->Draw(spriteData_.positionLeftTop[i], spriteData_.positionRightDown[i], spriteTransform_, spriteData_.material, uvResourceNum);
 	}
 #pragma endregion
 }

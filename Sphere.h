@@ -13,7 +13,7 @@ class Sphere
 public:
 	void Initialize(DirectXCommon* dxCommon, MyEngine* engine);
 
-	void Draw(const Vector4& material, const Matrix4x4& wvpdata);
+	void Draw(const Vector4& material, const Matrix4x4& wvpdata, uint32_t index);
 
 	void Finalize();
 
@@ -42,4 +42,3 @@ private:
 	uint32_t kSubDivision;
 	uint32_t vertexCount;
 };
-
