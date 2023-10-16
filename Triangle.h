@@ -15,7 +15,7 @@ class Triangle
 public:
 	void Initialize(DirectXCommon* dxCommon, MyEngine* engine);
 
-	void Draw(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& material, const Matrix4x4& wvpdata, uint32_t index);
+	void Draw(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& material, const Transform& transform, const Transform& cameraTransform, uint32_t index, const DirectionalLight& light);
 
 	void Finalize();
 
@@ -23,6 +23,8 @@ private:
 	void SettingVertex();
 
 	void SettingColor();
+
+	void SettingDictionalLight();
 
 	void TransformMatrix();
 
@@ -33,7 +35,7 @@ private:
 
 	VertexData* vertexData_;
 
-	Vector4* materialData_;
+	Material* materialData_;
 
 	ID3D12Resource* vertexResource_;
 
@@ -43,6 +45,8 @@ private:
 
 	//WVP用のリソース
 	ID3D12Resource* wvpResource_;
-	
-	Matrix4x4* wvpData_;
+	TransformationMatrix* wvpData_;
+
+	DirectionalLight* directionalLight_;
+	ID3D12Resource* directionalLightResource_;
 };

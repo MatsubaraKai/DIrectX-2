@@ -1,8 +1,7 @@
 #include "MyEngine.h"
 #include <assert.h>
 
-IDxcBlob* MyEngine::CompileShader(const std::wstring& filePath, const wchar_t* profile, IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler) 
-{
+IDxcBlob* MyEngine::CompileShader(const std::wstring& filePath, const wchar_t* profile, IDxcUtils* dxcUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler) {
 	//これからシェーダーをコンパイルする旨をログに出す
 	Log(ConvertString(std::format(L"Begin CompileShader, path:{},profile:{}\n", filePath, profile)));
 	
@@ -84,7 +83,7 @@ void MyEngine::InitializeDxcCompiler()
 	assert(SUCCEEDED(hr));
 }
 
-void MyEngine::CreateRootSignature() 
+void MyEngine::CreateRootSignature()
 {
 	//RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
@@ -92,7 +91,7 @@ void MyEngine::CreateRootSignature()
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	//RootParameter作成、複数設定可能な為、配列に
-	D3D12_ROOT_PARAMETER rootParameters[3] = {};
+	D3D12_ROOT_PARAMETER rootParameters[4] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;//PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;//レジスタ番号0とバインド
@@ -109,6 +108,10 @@ void MyEngine::CreateRootSignature()
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;//PixcelShaderを使う
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptoraRange;//tableの中身の配列を指定
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptoraRange);//Tableで利用する数
+
+	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//CBVを使う
+	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //PixcelShaderで使う
+	rootParameters[3].Descriptor.ShaderRegister = 1;//レジスタ番号1を使う
 
 	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};//Samplerの設定
 	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;//バイリニアフィルタ
@@ -128,12 +131,13 @@ void MyEngine::CreateRootSignature()
 	//シリアライズしてバイナリにする
 	signatureBlob_ = nullptr;
 	errorBlob_ = nullptr;
-
+	
 	HRESULT hr;
 	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
 		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob_, &errorBlob_);
 	
-	if (FAILED(dxCommon_->GetHr())) {
+	if (FAILED(dxCommon_->GetHr()))
+	{
 		Log(reinterpret_cast<char*>(errorBlob_->GetBufferPointer()));
 		assert(false);
 	}
@@ -145,7 +149,7 @@ void MyEngine::CreateRootSignature()
 	assert(SUCCEEDED(hr));
 }
 
-void MyEngine::CreateInputlayOut() 
+void MyEngine::CreateInputlayOut()
 {
 	inputElementDescs_[0].SemanticName = "POSITION";
 	inputElementDescs_[0].SemanticIndex = 0;
@@ -157,18 +161,23 @@ void MyEngine::CreateInputlayOut()
 	inputElementDescs_[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	inputElementDescs_[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
+	inputElementDescs_[2].SemanticName = "NORMAL";
+	inputElementDescs_[2].SemanticIndex = 0;
+	inputElementDescs_[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputElementDescs_[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
 	inputLayoutDesc_.pInputElementDescs = inputElementDescs_;
 	inputLayoutDesc_.NumElements = _countof(inputElementDescs_);
 }
 
-void MyEngine::BlendState() 
+void MyEngine::BlendState()
 {
 	//すべての色要素を書き込む
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask =
 		D3D12_COLOR_WRITE_ENABLE_ALL;
 }
 
-void MyEngine::RasterizerState()
+void MyEngine::RasterizerState() 
 {
 	//裏面（時計回り）を表示しない
 	rasterizerDesc_.CullMode = D3D12_CULL_MODE_BACK;
@@ -248,7 +257,7 @@ void MyEngine::SettingDepth()
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;//比較関数、近ければ描画される
 }
 
-void MyEngine::Initialize(const wchar_t* title, int32_t width, int32_t height) 
+void MyEngine::Initialize(const wchar_t* title, int32_t width, int32_t height)
 {
 	dxCommon_ = new DirectXCommon();
 	dxCommon_->Initialization(title, WinApp::GetInstance()->kClientWidth, WinApp::GetInstance()->kClientHeight);
@@ -297,7 +306,7 @@ void MyEngine::BeginFrame()
 	ImGui::ShowDemoWindow();
 }
 
-void MyEngine::EndFrame()
+void MyEngine::EndFrame() 
 {
 	//内部コマンドを生成する
 	ImGui::Render();
@@ -305,7 +314,7 @@ void MyEngine::EndFrame()
 	dxCommon_->PostDraw();
 }
 
-void MyEngine::Finalize() 
+void MyEngine::Finalize()
 {
 	for (int i = 0; i < 2; i++) 
 	{
@@ -327,12 +336,9 @@ void MyEngine::Finalize()
 	dxCommon_->Finalize();
 }
 
-void MyEngine::Update()
-{
+void MyEngine::Update() {}
 
-}
-
-DirectX::ScratchImage MyEngine::LoadTexture(const std::string& filePath) 
+DirectX::ScratchImage MyEngine::LoadTexture(const std::string& filePath)
 {
 	//テクスチャファイルを読んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
@@ -349,7 +355,7 @@ DirectX::ScratchImage MyEngine::LoadTexture(const std::string& filePath)
 	return mipImages;
 }
 
-ID3D12Resource* MyEngine::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata) 
+ID3D12Resource* MyEngine::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata)
 {
 	//metadataをもとにResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
@@ -378,7 +384,7 @@ ID3D12Resource* MyEngine::CreateTextureResource(ID3D12Device* device, const Dire
 		IID_PPV_ARGS(&resource));
 
 	assert(SUCCEEDED(hr));
-
+	
 	return resource;
 }
 
@@ -403,7 +409,7 @@ ID3D12Resource* MyEngine::UploadtextureData(ID3D12Resource* texture, const Direc
 	return intermediateResource_[index];
 }
 
-void MyEngine::SettingTexture(const std::string& filePath, uint32_t index) 
+void MyEngine::SettingTexture(const std::string& filePath, uint32_t index)
 {
 	DirectX::ScratchImage mipImage = LoadTexture(filePath);
 	const DirectX::TexMetadata& metadata = mipImage.GetMetadata();

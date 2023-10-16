@@ -25,7 +25,7 @@ private:
 
 	Triangle* triangle_[2];
 	TriangleData triangleData_[2];
-	Transform transform_;
+	Transform transform_[2];
 	Matrix4x4 worldMatrix_;
 
 	Sprite* sprite_[2];
@@ -39,8 +39,15 @@ private:
 
 	Transform cameraTransform_;
 
-	uint32_t uvResourceNum;
-	uint32_t monsterBallResourceNum;
+	uint32_t uvResourceNum_;
+	uint32_t monsterBallResourceNum_;
 
-	bool texture;
+	DirectionalLight directionalLight_;
+
+	bool texture_;
+
+	bool triangleDrawA_;
+	bool triangleDrawB_;
+	int sphereDraw_;
+	int spriteDraw_;
 };

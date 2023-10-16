@@ -69,11 +69,11 @@ private:
 
 	//スワップチェーン
 	IDXGISwapChain4* swapChain_;
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_;
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 
 	//ディスクリプタヒープの生成
 	ID3D12DescriptorHeap* rtvDescriptorHeap_;//rtv用
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_;
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 	ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
 	ID3D12DescriptorHeap* srvDescriptorHeap_;//srv用

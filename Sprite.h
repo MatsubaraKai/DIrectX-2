@@ -11,7 +11,7 @@ class Sprite
 public:
 	void Initialize(DirectXCommon* dxCommon, MyEngine* engine);
 
-	void Draw(const Vector4& a, const Vector4& b, const Transform& transform, const Vector4& material, uint32_t index);
+	void Draw(const Vector4& a, const Vector4& b, const Transform& transform, const Vector4& material, uint32_t index, const DirectionalLight& light);
 	
 	void Finalize();
 
@@ -19,6 +19,8 @@ private:
 	void SettingVartex();
 
 	void TransformMatrix();
+
+	void SettingDictionalLight();
 
 	void SettingColor();
 
@@ -31,9 +33,12 @@ private:
 	VertexData* vertexData_;
 	
 	ID3D12Resource* transformationMatrixResource_;
-	Matrix4x4* transformationMatrixdata_;
-	
+	TransformationMatrix* transformationMatrixdata_;
+
 	ID3D12Resource* materialResource_;
-	Vector4* materialData_;
+	Material* materialData_;
+
+	DirectionalLight* directionalLight_;
+	ID3D12Resource* directionalLightResource_;
 };
 
