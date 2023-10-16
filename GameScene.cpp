@@ -70,7 +70,8 @@ void GameScene::Update()
 {
 	for (int i = 0; i < 2; i++)
 	{
-		transform_[i].rotate.num[1] += 0.01f;
+		transform_[0].rotate.num[1] += 0.007f;
+		transform_[1].rotate.num[1] += 0.005f;
 		worldMatrix_ = MakeAffineMatrix(transform_[i].scale, transform_[i].rotate, transform_[i].translate);
 	}
 
