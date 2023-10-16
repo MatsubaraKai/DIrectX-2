@@ -89,7 +89,6 @@ void GameScene::Update()
 
 	directionalLight_.direction = Normalise(directionalLight_.direction);
 
-
 	ImGui::Begin("OPTION");
 	if (ImGui::TreeNode("Triangle"))
 	{
