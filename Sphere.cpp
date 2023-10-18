@@ -14,8 +14,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, MyEngine* engine)
 	TransformMatrix();
 }
 
-void Sphere::Draw(const Vector4& material, const Transform& transform, uint32_t index, const Transform& cameraTransform, const DirectionalLight& light)
-{
+void Sphere::Draw(const Vector4& material, const Transform& transform, const Matrix4x4& wvpdata, uint32_t index, const Transform& cameraTransform, const DirectionalLight& light){
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
 	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
@@ -141,5 +140,5 @@ void Sphere::SettingColor()
 void Sphere::SettingDictionalLight()
 {
 	directionalLightResource_ = DirectXCommon::CreateBufferResource(dxCommon_->GetDevice(), sizeof(DirectionalLight));
-	directionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLight_));
+	directionalLightResource_->Map(0, NULL, reinterpret_cast<void**>(&directionalLight_));
 }

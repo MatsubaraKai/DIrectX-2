@@ -37,9 +37,7 @@ void GameScene::Initialize(MyEngine* engine, DirectXCommon* dxCommon)
 
 	sphereDraw_ = false;
 
-	directionalLight_.color = { 1.0f,1.0f,1.0f,1.0f };
-	directionalLight_.direction = { 0.0f,-1.0f,0.0f };
-	directionalLight_.intensity = 1.0f;
+	directionalLight_ = {{1.0f, 1.0f,1.0f, 1.0f,},{0.0f,-1.0f,0.0f},1.0f};
 
 	texture_ = 0;
 	uvResourceNum_ = 0;
@@ -191,43 +189,34 @@ void GameScene::Update()
 	ImGui::End();
 }
 
-void GameScene::Draw() 
-{
-	if (triangleDrawA_) 
-	{
-		triangle_[0]->Draw(triangleData_[0].position[0], triangleData_[0].position[1], triangleData_[0].position[2], triangleData_[0].material, transform_[0], cameraTransform_, uvResourceNum_, directionalLight_);
+void GameScene::Draw() {
+	if (triangleDrawA_) {
+		triangle_[0]->Draw(
+		    triangleData_[0], transform_[0], cameraTransform_, uvResourceNum_, directionalLight_);
 	}
-
-	if (triangleDrawB_) 
-	{
-		triangle_[1]->Draw(triangleData_[1].position[0], triangleData_[1].position[1], triangleData_[1].position[2], triangleData_[1].material, transform_[1], cameraTransform_, uvResourceNum_, directionalLight_);
+	if (triangleDrawB_) {
+		triangle_[1]->Draw(
+		    triangleData_[1], transform_[1], cameraTransform_, uvResourceNum_, directionalLight_);
 	}
-
-	if (sphereDraw_) 
-	{
-		sphere_->Draw(sphereMaterial_, sphereTransform_, texture_, cameraTransform_, directionalLight_);
+	if (sphereDraw_) {
+		sphere_->Draw(
+		    sphereMaterial_, sphereTransform_, sphereMatrix_, texture_, cameraTransform_,
+		    directionalLight_);
 	}
-
-	if (spriteDraw_) 
-	{
-		for (int i = 0; i < 1; i++)
-		{
-			sprite_[i]->Draw(spriteData_.LeftTop[i], spriteData_.RightDown[i], spriteTransform_, spriteData_.material, uvResourceNum_, directionalLight_);
+	if (spriteDraw_) {
+		for (int i = 0; i < 1; i++) {
+			sprite_[i]->Draw(
+			    spriteData_.LeftTop[i], spriteData_.RightDown[i], spriteTransform_,
+			    spriteData_.material, uvResourceNum_, directionalLight_);
 		}
 	}
 }
 
-void GameScene::Finalize() 
-{
-	for (int i = 0; i < 2; i++)
-	{
+void GameScene::Finalize() {
+	for (int i = 0; i < 2; i++) {
 		triangle_[i]->Finalize();
 	}
-
-	for (int i = 0; i < 2; i++)
-	{
+	for (int i = 0; i < 2; i++) {
 		sprite_[i]->Finalize();
 	}
-
-	sphere_->Finalize();
 }

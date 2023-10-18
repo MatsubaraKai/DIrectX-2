@@ -12,8 +12,9 @@ void Triangle::Initialize(DirectXCommon* dxCommon, MyEngine* engine)
 	TransformMatrix();
 }
 
-void Triangle::Draw(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& material, const Transform& transform, const Transform& cameraTransform, uint32_t index, const DirectionalLight& light)
-{
+void Triangle::Draw(
+    const TriangleData& data, const Transform& transform, const Transform& cameraTransform,
+    uint32_t index, const DirectionalLight& light) {
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
 	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
@@ -22,18 +23,18 @@ void Triangle::Draw(const Vector4& a, const Vector4& b, const Vector4& c, const 
 	Matrix4x4 wvpMatrix_ = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
 	//左下
-	vertexData_[0].position = a;
+	vertexData_[0].position = data.position[0];
 	vertexData_[0].texcoord = { 0.0f,1.0f };
 
 	//上
-	vertexData_[1].position = b;
+	vertexData_[1].position = data.position[1];
 	vertexData_[1].texcoord = { 0.5f,0.0f };
 
 	//右下
-	vertexData_[2].position = c;
+	vertexData_[2].position = data.position[2];
 	vertexData_[2].texcoord = { 1.0f,1.0f };
 
-	*materialData_ = { material,false };
+	*materialData_ = { data.material,false };
 	*wvpData_ = { wvpMatrix_,worldMatrix };
 	*directionalLight_ = light;
 
