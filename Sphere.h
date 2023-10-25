@@ -1,51 +1,100 @@
 #pragma once
-#include "DirectXCommon.h"
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
-#include "VertexData.h"
-#include "MatrixCalculation.h"
+#include"WindowAPI.h"
+#include"DirectXCommon.h"
+#include"MyEngine.h"
+#include"MathUtilty.h"
+#include"Vector4.h"
+#include"Matrix4x4.h"
+#include"Vector2.h"
+#include"Transform.h"
+#include"TextureManager.h"
 
-class MyEngine;
+#include<numbers>
+#include<cmath>
+#include<assert.h>
+
+#include"Transform.h"
 
 class Sphere
 {
 public:
-	void Initialize(DirectXCommon* dxCommon, MyEngine* engine);
 
-	void Draw(
-	    const Vector4& material, const Transform& transform, const Matrix4x4& wvpdata,
-	    uint32_t index, const Transform& cameraTransform, const DirectionalLight& light);
+	~Sphere();
 
-	void Finalize();
+	void Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engine, TextureManager* texture);
 
-private:
-	void SettingVertex();
-	
-	void SettingColor();
+	void Update();
 
-	void SettingDictionalLight();
-	
-	void TransformMatrix();
+	void Draw();
 
 private:
+
+	WindowAPI* winApp_;
 	DirectXCommon* dxCommon_;
 	MyEngine* engine_;
+	TextureManager* texture_;
 
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	ID3D12Resource* vertexResource;
-	VertexData* vertexData_;
+	uint32_t kClientWidth_ = 0;
+	uint32_t kClientHeight_ = 0;
 
-	ID3D12Resource* wvpResource_;
-	TransformationMatrix* wvpData_;
+	ID3D12Resource* vertexResource_;	//頂点リソース
+	ID3D12Resource* materialResource_;	//マテリアルリソース
+	ID3D12Resource* wvpResource_;	//wvpリソース
+	ID3D12Resource* lightResource_ = nullptr;
 
-	ID3D12Resource* materialResource_;
-	Material* materialData_;
+	VertexData* vertexData_ = nullptr;
+	Material* materialData_ = nullptr;	//マテリアルデータ
+	TransformationMatrix* wvpData_ = nullptr;	//wvpデータ
+	DirectionalLight* lightData_ = nullptr;
 
-	const float pi = 3.1415f;
-	uint32_t kSubDivision;
-	uint32_t vertexCount;
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
+	D3D12_VERTEX_BUFFER_VIEW materialBufferView_;
+	D3D12_VERTEX_BUFFER_VIEW wvpBufferView_;
 
-	DirectionalLight* directionalLight_;
-	ID3D12Resource* directionalLightResource_;
+
+	//分割数
+	const uint32_t kSubdivision = 16;
+
+	//経度分割1つ分の角度
+	const float kLonEvery = static_cast<float>(std::numbers::pi) * 2.0f / float(kSubdivision);
+	//緯度分割1つ分の角度
+	const float kLatEvery = static_cast<float>(std::numbers::pi) / float(kSubdivision);
+
+	uint32_t latIndex = 0;
+	uint32_t lonIndex = 0;
+
+	//球の全ての頂点
+	const uint32_t totalVertex = 1536;
+
+	bool useMonsterBall = true;
+	
+
+	Transform transform_ = {};
+	Transform cameraTransform_ = {};
+
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2_;
+
+
+private:
+	/// <summary>
+	/// 頂点のバッファの取得
+	/// </summary>
+	void VertexBuffer();
+
+	/// <summary>
+	/// マテリアルのバッファの取得
+	/// </summary>
+	void MaterialBuffer();
+
+	/// <summary>
+	/// wvpのバッファの取得
+	/// </summary>
+	void WvpBuffer();
+
+	/// <summary>
+	/// ライトのバッファの取得
+	/// </summary>
+	void LightBuffer();
 };
+
