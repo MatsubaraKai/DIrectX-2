@@ -132,6 +132,7 @@ void Sphere::Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* eng
 	//Lightingを有効にする
 	materialData_->enableLighting = true;
 	
+	materialData_->uvTransform = MakeIdentity4x4();
 
 	transform_ =
 	{
@@ -179,6 +180,7 @@ void Sphere::Update()
 	lightData_->direction.y = direction[1];
 	lightData_->direction.z = direction[2];
 
+	
 
 	ImGui::End();
 	
