@@ -26,6 +26,8 @@ void ImGuiManager::Initialize(WindowAPI* winApp, DirectXCommon* dxCommon)
 		srvDescriptorHeap_,
 		srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart(),
 		srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart());
+
+
 }
 
 
@@ -36,6 +38,8 @@ void ImGuiManager::Begin()
 	ImGui::NewFrame();
 
 	ImGui::ShowDemoWindow();
+
+
 }
 
 void ImGuiManager::End()
@@ -47,6 +51,8 @@ void ImGuiManager::End()
 	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_ };
 	dxCommon_->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
 }
+
+
 
 /// <summary>
 /// 描画
