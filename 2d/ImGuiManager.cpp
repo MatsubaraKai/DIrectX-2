@@ -27,7 +27,10 @@ void ImGuiManager::Initialize(WindowAPI* winApp, DirectXCommon* dxCommon)
 		srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart(),
 		srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart());
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 05_00完了＆ほぼ全部変更
 }
 
 
@@ -39,7 +42,10 @@ void ImGuiManager::Begin()
 
 	ImGui::ShowDemoWindow();
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 05_00完了＆ほぼ全部変更
 }
 
 void ImGuiManager::End()
