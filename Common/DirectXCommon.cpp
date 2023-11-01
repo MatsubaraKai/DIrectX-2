@@ -15,6 +15,7 @@ DirectXCommon::DirectXCommon()
 //デストラクタ
 DirectXCommon::~DirectXCommon()
 {
+
 	CloseHandle(fenceEvent_);
 	/*fence_->Release();*/
 	//rtvDescriptorHeap_->Release();

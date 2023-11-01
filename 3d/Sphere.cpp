@@ -178,6 +178,7 @@ void Sphere::Update()
 
 	
 
+	ImGui::End();
 	
 }
 
