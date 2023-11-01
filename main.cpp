@@ -103,18 +103,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 
 		input->Update();
-		model->Update();
-		model2->Update();
+		/*model->Update();
+		model2->Update();*/
 		sphere->Update();
-		sprite->Update();
+		//sprite->Update();
 		
 		imGuiManager->End();
 
 		
-		model->Draw();
-		model2->Draw();
+		/*model->Draw();
+		model2->Draw();*/
 		sphere->Draw();
-		sprite->Draw();
+		//sprite->Draw();
 		
 		imGuiManager->Draw();
 		engine->PostDraw();

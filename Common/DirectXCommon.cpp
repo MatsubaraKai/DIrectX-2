@@ -1,11 +1,5 @@
 #include "DirectXCommon.h"
 
-
-/*=====================================*/
-/* 　　　　   パブリックメソッド　　　	　 */
-/*=====================================*/
-
-
 //コンストラクタ
 DirectXCommon::DirectXCommon()
 {
@@ -31,9 +25,6 @@ DirectXCommon::~DirectXCommon()
 	/*useAdapter_->Release();*/
 	//dxgiFactory_->Release();
 
-	
-	
-
 #ifdef _DEBUG
 	//debugController_->Release();
 #endif
@@ -47,7 +38,6 @@ DirectXCommon::~DirectXCommon()
 	//	debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
 	//	debug->Release();
 	//}
-
 }
 
 //初期化
@@ -95,17 +85,11 @@ void DirectXCommon::PreDraw()
 	//全画面クリア
 	ClearRenderTarget();
 
-
-
 }
 
 //描画後処理
 void DirectXCommon::PostDraw()
 {
-
-	//--------------------------------
-	//トランスフォームバリアの設定
-	//-------------------------------
 
 	//画面に描く処理はすべて終わり、画面に移すので、状態を遷移
 	//今回はRenderTargetからPresentにする
@@ -123,7 +107,6 @@ void DirectXCommon::PostDraw()
 	commandQueue_->ExecuteCommandLists(1, commandLists);
 	//GPUとOSに画面の交換を行うよう通知する
 	swapChain_->Present(1, 0);
-
 
 	//--------------------------------
 	//fenceの値を更新
@@ -162,13 +145,6 @@ Microsoft::WRL::ComPtr< ID3D12DescriptorHeap>DirectXCommon::CreateDescriptorHeap
 	HRESULT hr = device_->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
 	return descriptorHeap;
 }
-
-
-/*=====================================*/
-/* 　　　　   プライベートメソッド　　　    */
-/*=====================================*/
-
-
 /// <summary>
 /// DXGIデバイスの初期化
 /// </summary>
@@ -384,10 +360,6 @@ void DirectXCommon::CreateFinalRenderTargets()
 	rtvHandles_[1].ptr = rtvHandles_[0].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//二つ目を作る
 	device_->CreateRenderTargetView(swapChainResources_[1].Get(), &rtvDesc_, rtvHandles_[1]);
-
-
-
-
 }
 
 /// 全画面クリア
