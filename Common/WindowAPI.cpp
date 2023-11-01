@@ -1,9 +1,5 @@
 #include"WindowAPI.h"
 
-/*=====================================*/
-/* 　　　　   パブリックメソッド　　　 　    */
-/*=====================================*/
-
 //コンストラクタ
 WindowAPI::WindowAPI()
 {
@@ -45,10 +41,6 @@ bool WindowAPI::ProcessMessage()
 	return false;
 };
 
-
-/*=====================================*/
-/* 　　　　   プライベートメソッド　　　    */
-/*=====================================*/
 
 //ウィンドウプロシージャ
 LRESULT CALLBACK WindowAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)

@@ -43,10 +43,6 @@ public:
 	int32_t GetHeight() const { return Height_; };
 	WNDCLASS GetWinCLASS()const { return wc_; };
 
-	/*=====================================*/
-	/* 　　　　   プライベート変数    　       */
-	/*=====================================*/
-
 	//タイトル
 	const wchar_t* Title_ = nullptr;
 
@@ -61,10 +57,7 @@ public:
 
 
 private:
-	/*=====================================*/
-	/* 　　　　   プライベートメソッド　　　     */
-	/*=====================================*/
-
+	
 	//初期化
 	bool Initialize(const wchar_t* title, int32_t width, int32_t height);
 	//ウィンドウクラスを登録
@@ -72,6 +65,4 @@ private:
 
 	//ウィンドウプロシージャ
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-
 };
