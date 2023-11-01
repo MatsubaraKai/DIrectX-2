@@ -69,7 +69,6 @@ private:
 	Microsoft::WRL::ComPtr< ID3D12Resource> depthStencilResource_;
 
 	static TextureManager* instance;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
 
 private:
 
@@ -79,12 +78,6 @@ private:
 
 	[[nodiscard]]
 	Microsoft::WRL::ComPtr< ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
-	/// <summary>
-	/// テクスチャデータを読む
-	/// </summary>
-	/// <param name="filepath"></param>
-	/// <returns></returns>
-	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
@@ -96,7 +89,7 @@ private:
 	/// <param name="width">ウィンドウの幅</param>
 	/// <param name="height">ウィンドウの高さ</param>
 	/// <returns></returns>
-	ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
+	Microsoft::WRL::ComPtr< ID3D12Resource> CreateDepthStencilTextureResource(Microsoft::WRL::ComPtr< ID3D12Device> device, int32_t width, int32_t height);
 
 	/// <summary>
 	/// TextureResourceにデータを転送する

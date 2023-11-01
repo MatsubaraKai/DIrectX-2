@@ -24,7 +24,6 @@ DirectXCommon::DirectXCommon()
 //デストラクタ
 DirectXCommon::~DirectXCommon()
 {
-
 	CloseHandle(fenceEvent_);
 }
 
@@ -362,9 +361,6 @@ void DirectXCommon::CreateFinalRenderTargets()
 	rtvHandles_[1].ptr = rtvHandles_[0].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//二つ目を作る
 	device_->CreateRenderTargetView(swapChainResources_[1].Get(), &rtvDesc_, rtvHandles_[1]);
-
-
-
 
 
 

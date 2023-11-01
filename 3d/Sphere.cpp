@@ -180,7 +180,6 @@ void Sphere::Update()
 #endif // _DEBUG
 
 
-	ImGui::End();
 	
 }
 
