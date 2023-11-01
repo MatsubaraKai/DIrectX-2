@@ -92,10 +92,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	while (WindowAPI::ProcessMessage() == 0)
 	{
 
-		/*=====================================*/
-		/* 　　　　   メインループ　　    　       */
-		/*=====================================*/
-
 		dxCommon->PreDraw();
 		engine->PreDraw();
 		imGuiManager->Begin();

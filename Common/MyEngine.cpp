@@ -1,9 +1,4 @@
 #include"MyEngine.h"
-
-/*=====================================*/
-/* 　　　　   パブリックメソッド　　　	　 */
-/*=====================================*/
-
 MyEngine::~MyEngine()
 {
 
@@ -66,12 +61,6 @@ Microsoft::WRL::ComPtr< ID3D12Resource> MyEngine::CreateBufferResource(size_t si
 
 	return resource.Get();
 }
-
-/*=====================================*/
-/* 　　　　   プライベートメソッド　　　    */
-/*=====================================*/
-
-
 //CompileShader関数
 IDxcBlob* MyEngine::CompileShader
 (
