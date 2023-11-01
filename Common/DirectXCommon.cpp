@@ -6,15 +6,6 @@
 /*=====================================*/
 
 
-DirectXCommon* DirectXCommon::GetInstance()
-{
-	if (instance == NULL)
-	{
-		instance = new DirectXCommon;
-	}
-	return instance;
-}
-
 //コンストラクタ
 DirectXCommon::DirectXCommon()
 {
@@ -25,12 +16,43 @@ DirectXCommon::DirectXCommon()
 DirectXCommon::~DirectXCommon()
 {
 	CloseHandle(fenceEvent_);
+	/*fence_->Release();*/
+	//rtvDescriptorHeap_->Release();
+	srvDescriptorHeap_->Release();
+	dsvDescriptorHeap_->Release();
+	/*swapChainResources_[0]->Release();
+	swapChainResources_[1]->Release();*/
+	/*swapChain_->Release();*/
+	//commandList_->Release();
+	//commandAllocator_->Release();
+	//commandQueue_->Release();
+	/*device_->Release();*/
+	/*useAdapter_->Release();*/
+	//dxgiFactory_->Release();
+
+	
+	
+
+#ifdef _DEBUG
+	//debugController_->Release();
+#endif
+
+	////リソースリークチェック
+	//IDXGIDebug1* debug;
+	//if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug))))
+	//{
+	//	debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+	//	debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
+	//	debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
+	//	debug->Release();
+	//}
+
 }
 
 //初期化
-void DirectXCommon::Initialize()
+void DirectXCommon::Initialize(WindowAPI* winApp)
 {
-	winApp_ = WindowAPI::GetInstance();
+	winApp_ = winApp;
 
 
 	// DXGIデバイス初期化
@@ -378,9 +400,6 @@ void DirectXCommon::ClearRenderTarget()
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvhandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, &dsvhandle);
 
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
-
-
 	////描画先のRTVを設定する
 	//commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, nullptr);
 	
@@ -390,8 +409,6 @@ void DirectXCommon::ClearRenderTarget()
 
 	//指定した深度で画面全体をクリアする
 	commandList_->ClearDepthStencilView(dsvhandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-		
-	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
 }
 
 void DirectXCommon::CreateFence() {
@@ -438,5 +455,3 @@ ID3D12Resource* DirectXCommon::CreateDepthStencilTextureResource(ID3D12Device* d
 	return resource;
 }
 
-//静的メンバ変数の宣言と初期化
-DirectXCommon* DirectXCommon::instance = NULL;

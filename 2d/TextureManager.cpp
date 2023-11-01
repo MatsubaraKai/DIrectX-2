@@ -1,23 +1,14 @@
 #include"TextureManager.h"
 
-TextureManager* TextureManager::GetInstance()
-{
-	if (instance == NULL)
-	{
-		instance = new TextureManager;
-	}
-	return instance;
-}
-
 TextureManager::~TextureManager()
 {
 
 }
 
-void TextureManager::Initialize( int32_t width, int32_t height)
+void TextureManager::Initialize(DirectXCommon* directX, MyEngine* engine, int32_t width, int32_t height)
 {
-	dxCommon_ = DirectXCommon::GetInstance();
-	engine_ = MyEngine::GetInstance();
+	dxCommon_ = directX;
+	engine_ = engine;
 
 	descriptorSizeSRV = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
@@ -33,8 +24,8 @@ void TextureManager::Update()
 
 uint32_t TextureManager::LoadTexture(const std::string& filePath)
 {
-	uint32_t index = TextureCount + 1;
-	for (int i = 0; i < kMaxTexture; ++i) {
+	uint32_t index = kMaxTextureCount + 1;
+	for (int i = 0; i < kMaxTextureCount; ++i) {
 		if (IsusedTexture[i] == false) {
 			index = i;
 			IsusedTexture[i] = true;
@@ -45,7 +36,7 @@ uint32_t TextureManager::LoadTexture(const std::string& filePath)
 		//0より少ない
 		assert(false);
 	}
-	if (kMaxTexture < index) {
+	if (kMaxTextureCount < index) {
 		//MaxSpriteより多い
 		assert(false);
 	}
@@ -194,6 +185,3 @@ void TextureManager::CreateDepthStencilView(ID3D12Device* device, ID3D12Descript
 	//DSVHeapの先頭にDSVを作る
 	device->CreateDepthStencilView(depthStencilResource_.Get(), &dsvDesc_, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 }
-
-
-TextureManager* TextureManager::instance = NULL;

@@ -3,16 +3,19 @@
 
 Sprite::~Sprite()
 {
-
+	/*vertexResource_->Release();*/
+	materialResource_->Release();
+	transformationmatrixResource->Release();
+	indexResource_->Release();
 }
 
 
-void Sprite::Initialize(SpriteData* data,uint32_t textureHandle)
+void Sprite::Initialize(WindowAPI* winApp, DirectXCommon* dxcommon, MyEngine* engine, TextureManager* texture, SpriteData* data,uint32_t textureHandle)
 {
-	winApp_ = WindowAPI::GetInstance();
-	dxCommon_ = DirectXCommon::GetInstance();
-	engine_ = MyEngine::GetInstance();
-	texture_ = TextureManager::GetInstance();
+	winApp_ = winApp;
+	dxCommon_ = dxcommon;
+	engine_ = engine;
+	texture_ = texture;
 	
 	textureHandle_ = textureHandle;
 
@@ -77,7 +80,6 @@ void Sprite::Update()
 	uvTransformMatrix_ = Multiply(uvTransformMatrix_, MakeTranselateMatrix(uvTransform_.translate));
 	materialData_->uvTransform = uvTransformMatrix_;
 
-#ifdef _DEBUG
 	ImGui::Begin("UVTransform");
 
 	ImGui::DragFloat2("UVTranslate", &uvTransform_.translate.x, 0.01f, -10.0f, 10.0f);
@@ -85,9 +87,6 @@ void Sprite::Update()
 	ImGui::SliderAngle("UVRotate", &uvTransform_.rotate.z);
 
 	ImGui::End();
-#endif // _DEBUG
-
-	
 
 }
 

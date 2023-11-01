@@ -8,20 +8,15 @@
 class ImGuiManager
 {
 public:
-
-	static ImGuiManager* GetInstance();
-
 	~ImGuiManager();
 
-	void Initialize();
+	void Initialize(WindowAPI* winApp, DirectXCommon* dxCommon);
 
 	void Begin();
 
 	void End();
 
 	void Draw();
-
-	static ImGuiManager* instance;
 
 private:
 	WindowAPI* winApp_;

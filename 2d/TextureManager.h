@@ -9,8 +9,6 @@ class TextureManager
 {
 public:
 
-	static TextureManager* GetInstance();
-
 	struct Texture
 	{
 		D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
@@ -28,7 +26,7 @@ public:
 	/// </summary>
 	/// <param name="directX"></param>
 	/// <param name="engine"></param>
-	void Initialize(int32_t width, int32_t height);
+	void Initialize(DirectXCommon* directX, MyEngine* engine, int32_t width, int32_t height);
 
 	/// <summary>
 	/// 更新処理
@@ -53,14 +51,13 @@ private:
 	DirectXCommon* dxCommon_;
 	MyEngine* engine_;
 
-	static const size_t kMaxTexture = 2056;	//最大テクスチャ数
-	uint32_t TextureCount = 0;	//現在のテクスチャ数
-	std::array<Texture, kMaxTexture> textures_;
+	static const size_t kMaxTextureCount = 2056;
+	std::array<Texture, kMaxTextureCount> textures_;
 
-	bool IsusedTexture[kMaxTexture];
+	bool IsusedTexture[kMaxTextureCount];
 
 	//中間リソース
-	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, kMaxTexture> intermediateResource;
+	std::array<Microsoft::WRL::ComPtr<ID3D12Resource>, kMaxTextureCount> intermediateResource;
 
 	uint32_t descriptorSizeSRV;
 	
@@ -68,9 +65,9 @@ private:
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc_;
 	Microsoft::WRL::ComPtr< ID3D12Resource> depthStencilResource_;
 
-	static TextureManager* instance;
 
 private:
+
 
 
 	DirectX::ScratchImage ImageFileOpen(const std::string& filePath);
@@ -83,32 +80,14 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
 	
 	/// <summary>
-	Microsoft::WRL::ComPtr< ID3D12Resource> CreateDepthStencilTextureResource(Microsoft::WRL::ComPtr< ID3D12Device> device, int32_t width, int32_t height);
-
+	/// 深度の書き込みも出来るテクスチャリソースを作る
+	/// </summary>
 	/// /// <param name="device"></param>
 	/// <param name="width">ウィンドウの幅</param>
 	/// <param name="height">ウィンドウの高さ</param>
 	/// <returns></returns>
 	Microsoft::WRL::ComPtr< ID3D12Resource> CreateDepthStencilTextureResource(Microsoft::WRL::ComPtr< ID3D12Device> device, int32_t width, int32_t height);
 
-	/// <summary>
-	/// TextureResourceにデータを転送する
-	/// </summary>
-	/// <param name="texture"></param>
-	/// <param name="mipImages"></param>
-	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
-
-
-	/// <summary>
-	/// SRVの設定と生成
-	/// </summary>
-	/// <param name="device"></param>
-	/// <param name="srvDescriptorHeap"></param>
-	void CreateShaderResourceView(ID3D12Device* device, ID3D12DescriptorHeap* srvDescriptorHeap);
-
-	/// <summary>
-	///	dsvの設定と設定
-	/// </summary>
 	void CreateDepthStencilView(ID3D12Device* device, ID3D12DescriptorHeap* dsvDescriptorHeap);
 
 

@@ -21,7 +21,7 @@ public:
 
 	~Sphere();
 
-	void Initialize(uint32_t textureHandle);
+	void Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engine, TextureManager* texture, uint32_t textureHandle, uint32_t textureHandle2);
 
 	void Update();
 
@@ -35,6 +35,7 @@ private:
 	TextureManager* texture_;
 
 	uint32_t textureHandle_;
+	uint32_t textureHandle2_;
 
 	uint32_t kClientWidth_ = 0;
 	uint32_t kClientHeight_ = 0;
