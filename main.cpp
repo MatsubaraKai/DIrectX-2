@@ -7,6 +7,7 @@
 #include"TextureManager.h"
 #include"Sprite.h"
 #include"Sphere.h"
+#include"Model.h"
 
 const wchar_t* kWindowTitle = L"CG2";
 
@@ -29,38 +30,43 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	dxCommon->Initialize(winApp);
 	engine->Initialize(dxCommon, winApp);
 
-	
-	SpriteData* spriteData = new SpriteData;
-	Sphere* sphere;
-	Sprite* sprite;
 
+	//
+	//SpriteData* spriteData = new SpriteData;
+	//Sphere* sphere;
+	//Sprite* sprite;
+	Model* model;
 
-	sphere = new Sphere;
-	sprite = new Sprite;
-	
-	spriteData->vertex[0] = { 0.0f,360.0f,0.0f,1.0f };
-	spriteData->vertex[1] = { 0.0f,0.0f,0.0f,1.0f };
-	spriteData->vertex[2] = { 640.0f,360.0f,0.0f,1.0f };
-	spriteData->vertex[3] = { 0.0f,0.0f,0.0f,1.0f };
-	spriteData->vertex[4] = { 640.0f,0.0f,0.0f,1.0f };
-	spriteData->vertex[5] = { 640.0f,360.0f,0.0f,1.0f };
+	//sphere = new Sphere;
+	//sprite = new Sprite;
+	model = new Model;
+	//spriteData->vertex[0] = { 0.0f,360.0f,0.0f,1.0f };
+	//spriteData->vertex[1] = { 0.0f,0.0f,0.0f,1.0f };
+	//spriteData->vertex[2] = { 640.0f,360.0f,0.0f,1.0f };
+	//spriteData->vertex[3] = { 0.0f,0.0f,0.0f,1.0f };
+	//spriteData->vertex[4] = { 640.0f,0.0f,0.0f,1.0f };
+	//spriteData->vertex[5] = { 640.0f,360.0f,0.0f,1.0f };
 
-	spriteData->transform =
-	{
-		{1.0f,1.0f,1.0f},
-		{0.0f,0.0f,0.0f},
-		{0.0f,0.0f,0.0f}
-	};
+	//spriteData->transform =
+	//{
+	//	{1.0f,1.0f,1.0f},
+	//	{0.0f,0.0f,0.0f},
+	//	{0.0f,0.0f,0.0f}
+	//};
 	
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
-	texture->Initialize(dxCommon, kWindowWidth, kWindowHeight);
+	texture->Initialize(dxCommon, engine, kWindowWidth, kWindowHeight);
+
+	uint32_t uvTexture= texture->LoadTexture("Resources/uvChecker.png");
+	uint32_t monsterTexture = texture->LoadTexture("Resources/monsterBall.png");
 
 	imGuiManager->Initialize(winApp, dxCommon);
 
-
-	sphere->Initialize(winApp, dxCommon, engine,texture);
-	sprite->Initialize(winApp, dxCommon, engine, texture, spriteData);
+	model->Initialize(winApp, dxCommon, engine, texture, "Resources", "plane.obj");
+	//sphere->Initialize(winApp, dxCommon, engine, texture, uvTexture,monsterTexture);
+	//sprite->Initialize(winApp, dxCommon, engine, texture, spriteData, uvTexture);
+	
 
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -76,17 +82,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		imGuiManager->Begin();
 
 
-
-		sphere->Update();
-		sprite->Update();
-
+		model->Update();
+		//sphere->Update();
+		//sprite->Update();
+		
 		imGuiManager->End();
 
 		
-
-		sphere->Draw();
-		sprite->Draw();
-
+		model->Draw();
+		//sphere->Draw();
+		//sprite->Draw();
+		
 		imGuiManager->Draw();
 		engine->PostDraw();
 		dxCommon->PostDraw();
@@ -97,13 +103,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	CoUninitialize();
 
 
+	//delete sphere;
+	//delete sprite;
+	delete model;
+	
 
-	delete sphere;
-	delete sprite;
+	//delete spriteData;
 
-	delete texture;
+	
 	delete imGuiManager;
 	delete engine;
+	delete texture;
 	delete dxCommon;
 	delete winApp;
 

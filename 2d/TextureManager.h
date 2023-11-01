@@ -1,71 +1,84 @@
 #pragma once
-#include"externals/DirectXTex/DirectXTex.h"
-#include"ConvertString.h"
 #include"DirectXCommon.h"
-#include<d3d12.h>
-
+#include"MyEngine.h"
+#include"externals/DirectXTex/DirectXTex.h"
+#include"externals/DirectXTex/d3dx12.h"
+#include<wrl.h>
+#include<array>
 class TextureManager
 {
 public:
 
+	struct Texture
+	{
+		D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
+		D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+		ID3D12Resource* textureResource;
+	};
+
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
 	~TextureManager();
 
 	/// <summary>
-	///	初期化
+	/// 初期化
 	/// </summary>
-	void Initialize(DirectXCommon* dxCommon, int32_t width, int32_t height);
+	/// <param name="directX"></param>
+	/// <param name="engine"></param>
+	void Initialize(DirectXCommon* directX, MyEngine* engine, int32_t width, int32_t height);
 
+	/// <summary>
+	/// 更新処理
+	/// </summary>
+	void Update();
 
-	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSrvHandleGPU() { return textureSrvHandleGPU_; };
+	/// <summary>
+	/// 画像読み込み
+	/// </summary>
+	/// <param name="index"></param>
+	/// <param name="filePath"></param>
+	uint32_t LoadTexture(const std::string& filePath);
 
-
-	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSrvHandleGPU2() { return textureSrvHandleGPU2_; };
-
+	//ゲッター
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle(uint32_t index)
+	{
+		return textures_.at(index).textureSrvHandleGPU;
+	}
 
 private:
-	DirectX::TexMetadata metadata_;
-	DirectX::TexMetadata metadata2_;
 
-	DirectX::ScratchImage mipImages_;
-	DirectX::ScratchImage mipImages2_;
+	DirectXCommon* dxCommon_;
+	MyEngine* engine_;
 
-	ID3D12Resource* textureResource_;
-	ID3D12Resource* textureResource2_;
+	static const size_t kMaxTextureCount = 2056;
+	std::array<Texture, kMaxTextureCount> textures_;
 
-	ID3D12Resource* depthStencilResource_;
+	bool IsusedTexture[kMaxTextureCount];
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc_;
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2_;
+	//中間リソース
+	std::array<ID3D12Resource*, kMaxTextureCount> intermediateResource;
 
-
+	uint32_t descriptorSizeSRV;
 	
 
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_;
-
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2_;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2_;
-
-
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc_;
+	ID3D12Resource* depthStencilResource_;
 
 
 private:
-	/// <summary>
-	/// テクスチャデータを読む
-	/// </summary>
-	/// <param name="filepath"></param>
-	/// <returns></returns>
-	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
-	/// <summary>
-	/// DirectX12のTextureResourceを作る
-	/// </summary>
-	/// <param name="device"></param>
-	/// <param name="metadata"></param>
-	/// <returns></returns>
+
+
+	DirectX::ScratchImage ImageFileOpen(const std::string& filePath);
 	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
 
+	[[nodiscard]]
+	ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	
 	/// <summary>
 	/// 深度の書き込みも出来るテクスチャリソースを作る
 	/// </summary>
@@ -75,40 +88,7 @@ private:
 	/// <returns></returns>
 	ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
 
-	/// <summary>
-	/// TextureResourceにデータを転送する
-	/// </summary>
-	/// <param name="texture"></param>
-	/// <param name="mipImages"></param>
-	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
-
-
-	/// <summary>
-	/// SRVの設定と生成
-	/// </summary>
-	/// <param name="device"></param>
-	/// <param name="srvDescriptorHeap"></param>
-	void CreateShaderResourceView(ID3D12Device* device, ID3D12DescriptorHeap* srvDescriptorHeap);
-
-	/// <summary>
-	///	dsvの設定と設定
-	/// </summary>
 	void CreateDepthStencilView(ID3D12Device* device, ID3D12DescriptorHeap* dsvDescriptorHeap);
 
 
-	/// <summary>
-	/// CPUハンドルの取得
-	/// </summary>
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
-
-	/// <summary>
-	/// GPUハンドルの取得
-	/// </summary>
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
-
-
-
-
-
 };
-

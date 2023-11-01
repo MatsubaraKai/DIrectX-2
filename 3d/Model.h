@@ -16,22 +16,26 @@
 #include<cmath>
 #include<assert.h>
 
-struct MaterialData {
+struct MaterialData
+{
 	std::string textureFilePath;
 };
 
-struct ModelData {
-	std::vector<VertexData> vertices;
+struct ModelData
+{
+	std::vector<VertexData>vertices;
 	MaterialData material;
 };
 
-class Model {
-	
+
+
+class Model
+{
 public:
 
 	~Model();
 
-	void Initialize(WindowAPI* winapp, DirectXCommon* dxComon, MyEngine* engine, TextureManager* texture, const std::string& directoryPath, const std::string& filename);
+	void Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engine, TextureManager* texture, const std::string& directoryPath, const std::string& filename);
 	void Update();
 	void Draw();
 
@@ -70,8 +74,9 @@ private:
 	ID3D12Resource* lightResource_ = nullptr;
 	DirectionalLight* lightData_ = nullptr;
 
-private:
 
+
+private:
 	/// <summary>
 	/// Objファイルを読むための関数
 	/// </summary>
@@ -101,6 +106,5 @@ private:
 	/// ライトのバッファの取得
 	/// </summary>
 	void LightBuffer();
-
 
 };

@@ -1,13 +1,15 @@
-#include <Model.h>
+#include "Model.h"
 
-Model::~Model() {
+Model::~Model()
+{
 	vertexResource_->Release();
 	wvpResource_->Release();
 	materialResource_->Release();
 	lightResource_->Release();
 }
 
-void Model::Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engine, TextureManager* texture, const std::string& directoryPath, const std::string& filename) {
+void Model::Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engine, TextureManager* texture, const std::string& directoryPath, const std::string& filename)
+{
 	winApp_ = winApp;
 	dxCommon_ = dxComon;
 	engine_ = engine;
@@ -48,6 +50,8 @@ void Model::Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engi
 	lightData_->color = { 1.0f,1.0f,1.0f,1.0f };
 	lightData_->direction = { -1.0f,-1.0f,1.0f };
 	lightData_->intensity = 1.0f;
+
+
 }
 
 void Model::Update()
