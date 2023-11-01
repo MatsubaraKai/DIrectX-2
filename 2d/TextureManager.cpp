@@ -1,23 +1,23 @@
 #include"TextureManager.h"
 
+TextureManager* TextureManager::GetInstance()
+{
+	if (instance == NULL)
+	{
+		instance = new TextureManager;
+	}
+	return instance;
+}
+
 TextureManager::~TextureManager()
 {
 
-	for (int i = 0; i < kMaxTextureCount; ++i) {
-		if (IsusedTexture[i] == true) {
-			textures_[i].textureResource->Release();
-			intermediateResource[i]->Release();
-		}
-	}
-
-	depthStencilResource_->Release();
-
 }
 
-void TextureManager::Initialize(DirectXCommon* directX, MyEngine* engine, int32_t width, int32_t height)
+void TextureManager::Initialize( int32_t width, int32_t height)
 {
-	dxCommon_ = directX;
-	engine_ = engine;
+	dxCommon_ = DirectXCommon::GetInstance();
+	engine_ = MyEngine::GetInstance();
 
 	descriptorSizeSRV = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
@@ -33,8 +33,8 @@ void TextureManager::Update()
 
 uint32_t TextureManager::LoadTexture(const std::string& filePath)
 {
-	uint32_t index = kMaxTextureCount + 1;
-	for (int i = 0; i < kMaxTextureCount; ++i) {
+	uint32_t index = TextureCount + 1;
+	for (int i = 0; i < kMaxTexture; ++i) {
 		if (IsusedTexture[i] == false) {
 			index = i;
 			IsusedTexture[i] = true;
@@ -45,7 +45,7 @@ uint32_t TextureManager::LoadTexture(const std::string& filePath)
 		//0より少ない
 		assert(false);
 	}
-	if (kMaxTextureCount < index) {
+	if (kMaxTexture < index) {
 		//MaxSpriteより多い
 		assert(false);
 	}
@@ -54,7 +54,7 @@ uint32_t TextureManager::LoadTexture(const std::string& filePath)
 	DirectX::ScratchImage mipImages = ImageFileOpen(filePath);
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	textures_.at(index).textureResource = CreateTextureResource(dxCommon_->GetDevice(), metadata);
-	intermediateResource.at(index) = UploadTextureData(textures_.at(index).textureResource, mipImages);
+	intermediateResource.at(index) = UploadTextureData(textures_.at(index).textureResource.Get(), mipImages);
 	//metadataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata.format;
@@ -68,7 +68,7 @@ uint32_t TextureManager::LoadTexture(const std::string& filePath)
 	textures_.at(index).textureSrvHandleCPU.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	textures_.at(index).textureSrvHandleGPU.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	//SRVの作成
-	dxCommon_->GetDevice()->CreateShaderResourceView(textures_.at(index).textureResource, &srvDesc, textures_.at(index).textureSrvHandleCPU);
+	dxCommon_->GetDevice()->CreateShaderResourceView(textures_.at(index).textureResource.Get(), &srvDesc, textures_.at(index).textureSrvHandleCPU);
 
 	return index;
 }
@@ -87,7 +87,7 @@ DirectX::ScratchImage TextureManager::ImageFileOpen(const std::string& filePath)
 	return mipImage;
 }
 
-ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata)
+Microsoft::WRL::ComPtr< ID3D12Resource> TextureManager::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata)
 {
 	//metadataを基にResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
@@ -103,7 +103,7 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;//細かい設定を行う
 
 	//Resourceの生成
-	ID3D12Resource* resource = nullptr;
+	Microsoft::WRL::ComPtr< ID3D12Resource> resource = nullptr;
 	HRESULT hr = device->CreateCommittedResource(
 		&heapProperties,//Heapの設定
 		D3D12_HEAP_FLAG_NONE,//Heapの特殊な設定
@@ -116,13 +116,13 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 }
 
 [[nodiscard]]
-ID3D12Resource* TextureManager::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages)
+Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages)
 {
 	std::vector<D3D12_SUBRESOURCE_DATA>subresources;
 	DirectX::PrepareUpload(dxCommon_->GetDevice(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
 	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresources.size()));
-	ID3D12Resource* intermediateResource = engine_->CreateBufferResource(intermediateSize);
-	UpdateSubresources(dxCommon_->GetCommandList(), texture, intermediateResource, 0, 0, UINT(subresources.size()), subresources.data());
+	Microsoft::WRL::ComPtr< ID3D12Resource> intermediateResource = engine_->CreateBufferResource(intermediateSize);
+	UpdateSubresources(dxCommon_->GetCommandList(), texture, intermediateResource.Get(), 0, 0, UINT(subresources.size()), subresources.data());
 	//Tetureへの転送後は利用できるようにD3D12_RESOURCE_STATE_COPY_DESTからD3D12_RESOURCE_STATE_GENERIC_READへResourceStateを変更する
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -149,7 +149,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetGPUDescriptorHandle(Microsoft::WR
 }
 
 
-ID3D12Resource* TextureManager::CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height)
+Microsoft::WRL::ComPtr< ID3D12Resource>TextureManager::CreateDepthStencilTextureResource(Microsoft::WRL::ComPtr< ID3D12Device> device, int32_t width, int32_t height)
 {
 	//生成するResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
@@ -172,7 +172,7 @@ ID3D12Resource* TextureManager::CreateDepthStencilTextureResource(ID3D12Device* 
 	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;	//フォーマット。resourceと合わせる
 
 	//Resourceの生成
-	ID3D12Resource* resource = nullptr;
+	Microsoft::WRL::ComPtr< ID3D12Resource> resource = nullptr;
 	HRESULT hr = device->CreateCommittedResource(
 		&heapProperties,	//Heaoの設定
 		D3D12_HEAP_FLAG_NONE,	//heapの特殊な設定。
@@ -192,5 +192,8 @@ void TextureManager::CreateDepthStencilView(ID3D12Device* device, ID3D12Descript
 	dsvDesc_.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;	//Format。基本的にはResourceに合わせる
 	dsvDesc_.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;	//2dTexture
 	//DSVHeapの先頭にDSVを作る
-	device->CreateDepthStencilView(depthStencilResource_, &dsvDesc_, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	device->CreateDepthStencilView(depthStencilResource_.Get(), &dsvDesc_, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 }
+
+
+TextureManager* TextureManager::instance = NULL;

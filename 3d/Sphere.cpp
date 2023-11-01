@@ -2,20 +2,17 @@
 
 Sphere::~Sphere()
 {
-	vertexResource_->Release();
-	materialResource_->Release();
-	wvpResource_->Release();
-	lightResource_->Release();
+	
 }
 
-void Sphere::Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engine, TextureManager* texture, uint32_t textureHandle, uint32_t textureHandle2)
+void Sphere::Initialize(uint32_t textureHandle)
 {
-	winApp_ = winApp;
-	dxCommon_ = dxComon;
-	engine_ = engine;
-	texture_ = texture;
+	winApp_ = WindowAPI::GetInstance();
+	dxCommon_ = DirectXCommon::GetInstance();
+	engine_ = MyEngine::GetInstance();
+	texture_ = TextureManager::GetInstance();
 	textureHandle_ = textureHandle;
-	textureHandle2_ = textureHandle2;
+	
 
 	kClientHeight_ = winApp_->GetHeight();
 	kClientWidth_ = winApp_->GetWidth();
@@ -169,17 +166,19 @@ void Sphere::Update()
 	wvpData_->WVP = worldViewProjectionMatrix;
 	wvpData_->World = worldMatrix;
 
+#ifdef _DEBUG
 	ImGui::Begin("texture");
 	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
-	
+
 	float direction[] = { lightData_->direction.x,lightData_->direction.y,lightData_->direction.z };
 	ImGui::SliderFloat3("lightDirection", direction, -1.0f, 1.0f);
 
 	lightData_->direction.x = direction[0];
 	lightData_->direction.y = direction[1];
 	lightData_->direction.z = direction[2];
+	ImGui::End();
+#endif // _DEBUG
 
-	
 
 	ImGui::End();
 	
@@ -197,7 +196,7 @@ void Sphere::Draw()
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
 	
 	// SRVのDescriptorTableの先頭を設定。
-	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBall ? texture_->GetGPUHandle(textureHandle_) : texture_->GetGPUHandle(textureHandle2_));
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetGPUHandle(textureHandle_));
 	//描画
 	dxCommon_->GetCommandList()->DrawInstanced(totalVertex, 1, 0, 0);
 

@@ -2,25 +2,22 @@
 
 Model::~Model()
 {
-	vertexResource_->Release();
-	wvpResource_->Release();
-	materialResource_->Release();
-	lightResource_->Release();
+	
 }
 
-void Model::Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engine, TextureManager* texture, const std::string& directoryPath, const std::string& filename)
+void Model::Initialize(const std::string& directoryPath, const std::string& filename)
 {
-	winApp_ = winApp;
-	dxCommon_ = dxComon;
-	engine_ = engine;
-	texture_ = texture;
+	winApp_ = WindowAPI::GetInstance();
+	dxCommon_ = DirectXCommon::GetInstance();
+	engine_ = MyEngine::GetInstance();
+	texture_ = TextureManager::GetInstance();
 
 	kClientHeight_ = winApp_->GetHeight();
 	kClientWidth_ = winApp_->GetWidth();
 
 
 	modelData_ = LoadObjFile(directoryPath, filename);
-	textureHandle_ = texture->LoadTexture(modelData_.material.textureFilePath);
+	textureHandle_ = texture_->LoadTexture(modelData_.material.textureFilePath);
 
 	VertexBuffer();
 	MaterialBuffer();
@@ -31,18 +28,11 @@ void Model::Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engi
 	materialData_->enableLighting = true;
 	materialData_->uvTransform = MakeIdentity4x4();
 
-	transform_ =
-	{
-		{1.0f,1.0f,1.0f},
-		{0.0f,0.0f,0.0f},
-		{0.0f,0.0f,0.0f}
-	};
-
 	cameraTransform_ =
 	{
 		{1.0f, 1.0f, 1.0f },
 		{0.0f, 0.0f, 0.0f },
-		{0.0f, 0.4f, -10.0f}
+		{0.0f, 0.0f, -10.0f}
 	};
 
 	//ライトのデフォルト値
@@ -54,8 +44,11 @@ void Model::Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engi
 
 }
 
-void Model::Update()
+void Model::Update(Transform transform)
 {
+
+	Transform transform_ = transform;
+
 
 	Matrix4x4 worldMatrix = MakeAffinMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 cameraMatrix = MakeAffinMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.translate);
@@ -66,17 +59,6 @@ void Model::Update()
 	wvpData_->WVP = worldViewProjectionMatrix;
 	wvpData_->World = worldMatrix;
 
-	ImGui::Begin("obj");
-
-	float rotate[] = { transform_.rotate.x,transform_.rotate.y,transform_.rotate.z };
-	ImGui::SliderFloat3("rotate", rotate, -2.0f, 2.0f);
-
-	transform_.rotate.x = rotate[0];
-	transform_.rotate.y = rotate[1];
-	transform_.rotate.z = rotate[2];
-
-
-	ImGui::End();
 }
 
 void Model::Draw()
