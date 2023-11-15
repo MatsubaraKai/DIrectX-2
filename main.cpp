@@ -91,46 +91,36 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	// ウィンドウの×ボタンが押されるまでループ
 	while (WindowAPI::ProcessMessage() == 0)
 	{
-
-		/*=====================================*/
-		/* 　　　　   メインループ　　    　       */
-		/*=====================================*/
-
 		dxCommon->PreDraw();
 		engine->PreDraw();
 		imGuiManager->Begin();
-
 
 		if (input->TriggerKey(DIK_0))
 		{
 			OutputDebugStringA("Hit\n");
 		}
 
-		input->Update();
-		model->Update();
-		model2->Update();
-		sphere->Update();
-		sprite->Update();
+		//input->Update();
+		//model->Update();
+		//model2->Update();
+		//sphere->Update();
+		//sprite->Update();
 		
 		imGuiManager->End();
-
-		
+		/*
 		model->Draw();
 		model2->Draw();
 		sphere->Draw();
 		sprite->Draw();
-		
+		*/
 		imGuiManager->Draw();
 		engine->PostDraw();
 		dxCommon->PostDraw();
-
-
 	}
 
 	D3DResourceLeakChecker leakCheak;
 
 	CoUninitialize();
-
 
 	delete sphere;
 	delete sprite;
