@@ -97,12 +97,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			OutputDebugStringA("Hit\n");
 		}
 
-		//input->Update();
-		//model->Update();
-		//model2->Update();
-		//sphere->Update();
-		//sprite->Update();
-		
+		input->Update();
+		/*model->Update();
+		model2->Update();
+		sphere->Update();
+		sprite->Update();
+		*/
 		imGuiManager->End();
 		/*
 		model->Draw();
@@ -132,6 +132,5 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	delete texture;
 	delete dxCommon;
 	delete winApp;
-
 	return 0;
 }
