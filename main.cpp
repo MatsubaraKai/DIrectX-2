@@ -10,7 +10,7 @@
 #include"Model.h"
 #include"Input.h"
 
-const wchar_t* kWindowTitle = L"CG2";
+const wchar_t* kWindowTitle = L"GE3";
 
 struct D3DResourceLeakChecker
 {
@@ -46,7 +46,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	dxCommon->Initialize(winApp);
 	engine->Initialize(dxCommon, winApp);
 	input->Initialize(winApp);
-
 	
 	SpriteData* spriteData = new SpriteData;
 	Sphere* sphere;
@@ -85,8 +84,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	model2->Initialize(winApp, dxCommon, engine, texture, "Resources", "axis.Obj");
 	sphere->Initialize(winApp, dxCommon, engine, texture, uvTexture,monsterTexture);
 	sprite->Initialize(winApp, dxCommon, engine, texture, spriteData, uvTexture);
-	
-	
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (WindowAPI::ProcessMessage() == 0)
