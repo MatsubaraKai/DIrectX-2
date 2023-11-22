@@ -1,5 +1,4 @@
 #include "Model.h"
-#include "Input.h"
 Model::~Model()
 {
 	

@@ -87,16 +87,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		dxCommon->PreDraw();
 		engine->PreDraw();
 		imGuiManager->Begin();
-		input->Update();
 
-	
-		
-		model->Update();
-	/*	model2->Update();
-		sphere->Update();
+		if (input->TriggerKey(DIK_0))
+		{
+			OutputDebugStringA("Hit\n");
+		}
+
+		input->Update();
+		/*model->Update();
+		model2->Update();
+		model2->Update();
+		model2->Update();
 		sprite->Update();*/
 		
-		imGuiManager->End();
+		
+		
 		
 		model->Draw();
 		/*model2->Draw();
