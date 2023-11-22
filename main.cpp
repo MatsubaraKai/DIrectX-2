@@ -48,15 +48,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	input->Initialize(winApp);
 	
 	SpriteData* spriteData = new SpriteData;
-	Sphere* sphere;
-	Sprite* sprite;
-	Model* model;
-	Model* model2;
+	Sphere* sphere = new Sphere;
+	Sprite* sprite = new Sprite;
+	Model* model = new Model;
+	Model* model2 = new Model;
 
-	sphere = new Sphere;
-	sprite = new Sprite;
-	model = new Model;
-	model2 = new Model;
 	spriteData->vertex[0] = { 0.0f,360.0f,0.0f,1.0f };
 	spriteData->vertex[1] = { 0.0f,0.0f,0.0f,1.0f };
 	spriteData->vertex[2] = { 640.0f,360.0f,0.0f,1.0f };
@@ -91,25 +87,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		dxCommon->PreDraw();
 		engine->PreDraw();
 		imGuiManager->Begin();
-
-		if (input->TriggerKey(DIK_0))
-		{
-			OutputDebugStringA("Hit\n");
-		}
-
 		input->Update();
-		/*model->Update();
-		model2->Update();
+
+	
+		
+		model->Update();
+	/*	model2->Update();
 		sphere->Update();
-		sprite->Update();
-		*/
+		sprite->Update();*/
+		
 		imGuiManager->End();
-		/*
+		
 		model->Draw();
-		model2->Draw();
+		/*model2->Draw();
 		sphere->Draw();
-		sprite->Draw();
-		*/
+		sprite->Draw();*/
+		
 		imGuiManager->Draw();
 		engine->PostDraw();
 		dxCommon->PostDraw();

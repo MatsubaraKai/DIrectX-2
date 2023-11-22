@@ -1,5 +1,5 @@
 #include "Model.h"
-
+#include "Input.h"
 Model::~Model()
 {
 	
@@ -53,7 +53,6 @@ void Model::Initialize(WindowAPI* winApp, DirectXCommon* dxComon, MyEngine* engi
 
 void Model::Update()
 {
-
 	Matrix4x4 worldMatrix = MakeAffinMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 cameraMatrix = MakeAffinMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.translate);
 	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
@@ -64,14 +63,22 @@ void Model::Update()
 	wvpData_->World = worldMatrix;
 
 	ImGui::Begin("obj");
-
 	float rotate[] = { transform_.rotate.x,transform_.rotate.y,transform_.rotate.z };
+	float translate[] = { transform_.translate.x,transform_.translate.y,transform_.translate.z };
+	float scale[] = { transform_.scale.x,transform_.scale.y,transform_.scale.z };
 	ImGui::SliderFloat3("rotate", rotate, -2.0f, 2.0f);
-
 	transform_.rotate.x = rotate[0];
 	transform_.rotate.y = rotate[1];
 	transform_.rotate.z = rotate[2];
-
+	ImGui::SliderFloat3("translate", translate, -10.0f, 50.0f);
+	transform_.translate.x = translate[0];
+	transform_.translate.y = translate[1];
+	transform_.translate.z = translate[2];
+	ImGui::SliderFloat3("scale", scale, -50.0f, 15.0f);
+	transform_.scale.x = scale[0];
+	transform_.scale.y = scale[1];
+	transform_.scale.z = scale[2];
+	
 
 	ImGui::End();
 }

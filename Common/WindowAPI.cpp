@@ -1,9 +1,5 @@
 #include"WindowAPI.h"
 
-/*=====================================*/
-/* 　　　　   パブリックメソッド　　　 　    */
-/*=====================================*/
-
 //コンストラクタ
 WindowAPI::WindowAPI()
 {
@@ -44,11 +40,6 @@ bool WindowAPI::ProcessMessage()
 
 	return false;
 };
-
-
-/*=====================================*/
-/* 　　　　   プライベートメソッド　　　    */
-/*=====================================*/
 
 //ウィンドウプロシージャ
 LRESULT CALLBACK WindowAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -126,8 +117,6 @@ bool WindowAPI::InitializeWindow(const wchar_t* title, int32_t width, int32_t he
 		nullptr					//オプション
 	);
 
-
-
 	if (hwnd_ == nullptr)
 	{
 		return false;
@@ -136,7 +125,5 @@ bool WindowAPI::InitializeWindow(const wchar_t* title, int32_t width, int32_t he
 	//ウィンドウを表示する
 	ShowWindow(hwnd_, SW_SHOW);
 
-
 	return true;
-
 }

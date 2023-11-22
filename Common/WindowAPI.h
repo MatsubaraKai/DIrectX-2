@@ -11,11 +11,6 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 class WindowAPI
 {
 public:
-
-	/*=====================================*/
-	/* 　　　　   パブリックメソッド　　　	　 */
-	/*=====================================*/
-
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
@@ -43,10 +38,6 @@ public:
 	int32_t GetHeight() const { return Height_; };
 	WNDCLASS GetWinCLASS()const { return wc_; };
 
-	/*=====================================*/
-	/* 　　　　   プライベート変数    　       */
-	/*=====================================*/
-
 	//タイトル
 	const wchar_t* Title_ = nullptr;
 
@@ -61,9 +52,6 @@ public:
 
 
 private:
-	/*=====================================*/
-	/* 　　　　   プライベートメソッド　　　     */
-	/*=====================================*/
 
 	//初期化
 	bool Initialize(const wchar_t* title, int32_t width, int32_t height);
@@ -72,6 +60,4 @@ private:
 
 	//ウィンドウプロシージャ
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-
 };
