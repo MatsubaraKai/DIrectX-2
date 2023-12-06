@@ -85,8 +85,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	model2->Initialize(winApp, dxCommon, engine, texture, "Resources", "axis.Obj");
 	sphere->Initialize(winApp, dxCommon, engine, texture, uvTexture,monsterTexture);
 	sprite->Initialize(winApp, dxCommon, engine, texture, spriteData, uvTexture);
-	
-	
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (WindowAPI::ProcessMessage() == 0)
@@ -110,7 +108,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		
 		imGuiManager->End();
 
-		
 		/*model->Draw();
 		model2->Draw();*/
 		sphere->Draw();
@@ -120,13 +117,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		engine->PostDraw();
 		dxCommon->PostDraw();
 
-
 	}
 
 	D3DResourceLeakChecker leakCheak;
 
 	CoUninitialize();
-
 
 	delete sphere;
 	delete sprite;
