@@ -1,4 +1,5 @@
 #include"WindowAPI.h"
+#pragma comment(lib, "winmm.lib")
 
 //コンストラクタ
 WindowAPI::WindowAPI()
@@ -67,6 +68,7 @@ LRESULT CALLBACK WindowAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
 //ウィンドウの初期化
 bool WindowAPI::Initialize(const wchar_t* title, int32_t width, int32_t height)
 {
+	timeBeginPeriod(1);
 	if (!InitializeWindow(title, width, height))
 	{
 		return false;

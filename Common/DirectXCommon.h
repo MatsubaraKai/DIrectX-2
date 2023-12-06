@@ -5,7 +5,7 @@
 #include"ConvertString.h"
 #include<format>
 #include<dxgidebug.h>
-
+#include <chrono>
 #include"WindowAPI.h"
 
 #pragma comment(lib,"d3d12.lib")
@@ -86,6 +86,21 @@ private:
 	/// 全画面クリア
 	/// </summary>
 	void ClearRenderTarget();
+
+	/// <summary>
+	/// FPS固定初期化
+	/// </summary>
+	void InitializeFixFPS();
+	
+	/// <summary>
+	/// FPS固定更新
+	/// </summary>
+	void UpdateFixFPS();
+
+	/// <summary>
+	/// 記録時間(FPS固定用)
+	/// </summary>
+	std::chrono::steady_clock::time_point reference_;
 
 	/// <summary>
 	/// 深度の書き込みも出来るテクスチャリソースを作る
