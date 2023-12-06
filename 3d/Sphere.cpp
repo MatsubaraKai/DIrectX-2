@@ -170,11 +170,18 @@ void Sphere::Update()
 	ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 	
 	float direction[] = { lightData_->direction.x,lightData_->direction.y,lightData_->direction.z };
+	float color[] = { lightData_->color.x,lightData_->color.y,lightData_->color.z,lightData_->color.w };
 	ImGui::SliderFloat3("lightDirection", direction, -1.0f, 1.0f);
+	ImGui::SliderFloat4("lightcolor", color, -1.0f, 1.0f);
 
 	lightData_->direction.x = direction[0];
 	lightData_->direction.y = direction[1];
 	lightData_->direction.z = direction[2];
+
+	lightData_->color.x = color[0];
+	lightData_->color.y = color[1];
+	lightData_->color.z = color[2];
+	lightData_->color.w = color[3];
 
 	
 
