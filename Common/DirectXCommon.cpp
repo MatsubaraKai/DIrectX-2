@@ -449,7 +449,7 @@ void DirectXCommon::UpdateFixFPS() {
 		std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
 
 	// 1/60 (よりわずかに短い時間)　立っていない場合
-	if (elapsed < kMinTime) {
+	if (elapsed < kMinCheackTime) {
 		// 1/60経過するまで微少なスリープを繰り返す
 		while (std::chrono::steady_clock::now() - reference_ < kMinTime) {
 			//1マイクロ秒スリープ
